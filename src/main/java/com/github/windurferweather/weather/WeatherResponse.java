@@ -2,18 +2,19 @@ package com.github.windurferweather.weather;
 
 import jakarta.persistence.Entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 class WeatherResponse {
     private double avgTemp;
-    private double windSpeed;
+    private BigDecimal windSpeed;
     private LocalDate date;
 
     public WeatherResponse() {
     }
 
-    public WeatherResponse(LocalDate date, double avgTemp, double windSpeed) {
+    public WeatherResponse(LocalDate date, double avgTemp, BigDecimal windSpeed) {
         this.date = date;
         this.avgTemp = avgTemp;
         this.windSpeed = windSpeed;
@@ -27,11 +28,11 @@ class WeatherResponse {
         this.avgTemp = avgTemp;
     }
 
-    public double getWindSpeed() {
+    public BigDecimal getWindSpeed() {
         return windSpeed;
     }
 
-    public void setWindSpeed(double windSpeed) {
+    public void setWindSpeed(BigDecimal windSpeed) {
         this.windSpeed = windSpeed;
     }
 
