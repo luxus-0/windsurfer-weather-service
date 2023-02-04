@@ -1,15 +1,18 @@
 package com.github.windurferweather.weather;
 
 import jakarta.persistence.Entity;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 
 @Entity
+@Builder
 class CityResponse {
     private String city;
     private String country;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private float bestLocFactor;
 
     public CityResponse() {
     }
