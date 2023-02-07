@@ -1,87 +1,84 @@
 package com.github.windurferweather.weather;
 
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
-
-import static com.github.windurferweather.weather.DateValid.isValid;
-import static com.github.windurferweather.weather.WeatherUtils.*;
 
 @Log4j2
 @Service
 class WeatherForecastImpl implements WeatherForecastService {
 
+    private static final String WEATHER_URL = "";
     private final RestTemplate restTemplate;
-    private final Environment environment;
-    @Value("#{'${list.of.cities}'.split(',')}")
-    private List<String> cities;
+    private final DateValidation dateValidation;
+    private List<CityResponse> cities;
 
-    WeatherForecastImpl(RestTemplate restTemplate, Environment environment) {
+    WeatherForecastImpl(RestTemplate restTemplate, DateValidation dateValidation) {
         this.restTemplate = restTemplate;
-        this.environment = environment;
+        this.dateValidation = dateValidation;
+    }
+
+    void addLocation(String city, String country) {
+        cities.add(CityResponse.builder()
+                        .city(city)
+                        .country(country)
+                .build());
     }
 
     @Override
-    public WeatherResponse getWeatherForecastByDate(LocalDate date) {
-        String weather_url = environment.getProperty("weather.api.url");
-        String key = environment.getProperty("weather.api.key");
-        for (String city : cities) {
-            Objects.requireNonNull(weather_url);
-            String weather_api = String.format(weather_url, city, key);
-            WeatherResponse weatherResponse = restTemplate.getForObject(weather_api, WeatherResponse.class);
-            List<WeatherResponse> weatherForecastData = new ArrayList<>();
-            weatherForecastData.add(weatherResponse);
-
-            String windSpeed = weatherForecastData.get(Integer.parseInt(WIND_SPEED_KEY)).toString();
-            String temp = weatherForecastData.get(Integer.parseInt(TEMP_KEY)).toString();
-            String actualDate = weatherForecastData.get(Integer.parseInt(VALID_DATE_KEY)).toString();
-
-            isValid(actualDate);
-
-            double wind_speed = Double.parseDouble(windSpeed);
-            double temperature = Double.parseDouble(temp);
-
-            Stream.of(windSpeed, temp, city)
-                    .filter(checkWeather -> wind_speed > 5 && wind_speed < 18
-                            && temperature > 5 && temperature < 35)
+    public WeatherResponseDto retrieveWeatherForecastByDate(String date) {
+            String city = cities.stream()
+                    .map(CityResponse::getCity)
                     .findAny()
-                    .ifPresent(checkWeather -> weatherForecastData.add(getWeather(city, wind_speed, temperature)));
+                    .orElseThrow();
 
-            List<CityResponse> bestLocations = new ArrayList<>();
-            bestLocations.add(CityResponse.builder()
-                    .bestLocFactor(getBestLocForSurfer(wind_speed, temperature))
-                    .build());
+            String weather_api = String.format(WEATHER_URL);
+            WeatherResponse weatherResponse = restTemplate.getForObject(weather_api, WeatherResponse.class);
+            List<WeatherResponse> weatherResponses = new ArrayList<>();
+            weatherResponses.add(weatherResponse);
 
-            log.info("Best location for surfer is: " + bestLocations);
+            double windSpeed = readWindSpeed(weatherResponses);
+            double avgTemp = readAvgTemp(weatherResponses);
 
-            return getWeather(city, wind_speed, temperature);
-        }
-        return null;
+            dateValidation.isValid(date);
+
+
+            Stream.of(windSpeed, avgTemp, city)
+                    .filter(checkWeather -> windSpeed > 5 && windSpeed < 18
+                            && avgTemp > 5 && avgTemp < 35)
+                    .findAny()
+                    .ifPresentOrElse(showTemp -> generateWeather(city, windSpeed, avgTemp),
+                            () -> log.info("Weather argument not found"));
+        return new WeatherResponseDto(windSpeed, avgTemp, city);
     }
 
-    private static float getBestLocForSurfer(double wind_speed, double temperature) {
-        return (float) ((wind_speed * 3) + temperature);
-    }
-
-    private static WeatherResponse getWeather(String city, double wind_speed, double temperature) {
+    private WeatherResponse.WeatherResponseBuilder generateWeather(String city, double windSpeed, double avgTemp) {
         return WeatherResponse.builder()
-                .windSpeed(wind_speed)
-                .avgTemp(temperature)
-                .city(create(city))
-                .build();
+                .windSpeed(windSpeed)
+                .avgTemp(avgTemp)
+                .city(CityResponse.builder()
+                        .city(city)
+                        .build());
     }
 
-    private static CityResponse create(String city) {
-        return CityResponse.builder()
-                .city(city)
-                .build();
+    private static Double readAvgTemp(List<WeatherResponse> weatherResponses) {
+        return weatherResponses.stream()
+                .map(WeatherResponse::getAvgTemp)
+                .findAny().orElseThrow();
+    }
+
+    private double readWindSpeed(List<WeatherResponse> weatherResponses) {
+        return weatherResponses.stream()
+                .map(WeatherResponse::getWindSpeed)
+                .findAny()
+                .orElseThrow();
+    }
+
+    private float findBestLocForSurfer(double wind_speed, double temperature) {
+        return (float) ((wind_speed * 3) + temperature);
     }
 }
