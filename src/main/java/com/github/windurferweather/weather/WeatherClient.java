@@ -9,5 +9,4 @@ class WeatherClient {
         this.restTemplate = restTemplate;
     }
 
-
 }
