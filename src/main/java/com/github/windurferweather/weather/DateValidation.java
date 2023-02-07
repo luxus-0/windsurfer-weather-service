@@ -4,8 +4,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-class DateValid {
-    static boolean isValid (String actualDate){
+class DateValidation {
+    boolean isValid (String actualDate){
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
         try {
