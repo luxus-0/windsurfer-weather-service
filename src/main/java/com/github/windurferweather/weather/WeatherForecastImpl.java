@@ -2,7 +2,6 @@ package com.github.windurferweather.weather;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +11,11 @@ import java.util.stream.Stream;
 @Service
 class WeatherForecastImpl implements WeatherForecastService {
 
-    private static final String WEATHER_URL = "";
-    private final RestTemplate restTemplate;
+
     private final DateValidation dateValidation;
     private List<CityResponse> cities;
 
-    WeatherForecastImpl(RestTemplate restTemplate, DateValidation dateValidation) {
-        this.restTemplate = restTemplate;
+    WeatherForecastImpl(DateValidation dateValidation) {
         this.dateValidation = dateValidation;
     }
 
@@ -36,11 +33,7 @@ class WeatherForecastImpl implements WeatherForecastService {
                     .findAny()
                     .orElseThrow();
 
-            String weather_api = String.format(WEATHER_URL);
-            WeatherResponse weatherResponse = restTemplate.getForObject(weather_api, WeatherResponse.class);
             List<WeatherResponse> weatherResponses = new ArrayList<>();
-            weatherResponses.add(weatherResponse);
-
             double windSpeed = readWindSpeed(weatherResponses);
             double avgTemp = readAvgTemp(weatherResponses);
 
