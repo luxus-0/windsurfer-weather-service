@@ -1,18 +1,21 @@
 package com.github.windurferweather.weather;
 
 import jakarta.persistence.Entity;
-import lombok.Builder;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 import java.math.BigDecimal;
 
 @Entity
-@Builder
 class CityResponse {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String city;
     private String country;
     private BigDecimal latitude;
     private BigDecimal longitude;
-    private float bestLocFactor;
 
     public CityResponse() {
     }
