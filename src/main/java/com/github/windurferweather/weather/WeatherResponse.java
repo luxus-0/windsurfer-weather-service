@@ -1,7 +1,9 @@
 package com.github.windurferweather.weather;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -9,29 +11,28 @@ import java.time.LocalDate;
 @Entity
 @Builder
 class WeatherResponse {
-    private double avgTemp;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private double temp;
     private double windSpeed;
     private LocalDate date;
-
-    @OneToOne
-
-    private CityResponse city;
 
     public WeatherResponse() {
     }
 
-    public WeatherResponse(LocalDate date, double avgTemp, double windSpeed) {
-        this.date = date;
-        this.avgTemp = avgTemp;
+    public WeatherResponse(double temp, double windSpeed, LocalDate date) {
+        this.temp = temp;
         this.windSpeed = windSpeed;
+        this.date = date;
     }
 
-    public double getAvgTemp() {
-        return avgTemp;
+    public double getTemp() {
+        return temp;
     }
 
-    public void setAvgTemp(double avgTemp) {
-        this.avgTemp = avgTemp;
+    public void setTemp(double temp) {
+        this.temp = temp;
     }
 
     public double getWindSpeed() {
@@ -48,13 +49,5 @@ class WeatherResponse {
 
     public void setDate(LocalDate date) {
         this.date = date;
-    }
-
-    public CityResponse getCity() {
-        return city;
-    }
-
-    public void setCity(CityResponse city) {
-        this.city = city;
     }
 }
