@@ -1,5 +1,5 @@
 package com.github.windurferweather.weather;
 
-class WeatherMessageUrl {
+class WeatherUrl {
     public static final String WEATHER_URL = "";
 }
