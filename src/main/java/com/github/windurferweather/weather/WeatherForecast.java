@@ -3,19 +3,41 @@ package com.github.windurferweather.weather;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
-import java.util.stream.DoubleStream;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 @Log4j2
 @Service
-class WeatherForecast implements WeatherForecastService {
+class WeatherForecast {
 
-    @Override
-    public WeatherResponseDto retrieveWeatherForecastByDate(String date) {
-        valid(date);
+    private final WeatherForecastClient weatherForecastClient;
+
+    WeatherForecast(WeatherForecastClient weatherForecastClient) {
+        this.weatherForecastClient = weatherForecastClient;
     }
+
+    public WeatherResponseDto retrieveWeatherForecast(WeatherResponse weatherResponse) {
+        double temperature = weatherResponse.getTemperature();
+        double windSpeed = weatherResponse.getWindSpeed();
+        String city = weatherResponse.getCity();
+        String country = weatherResponse.getCountry();
+        String date = weatherResponse.getDate();
+        if (weatherResponse.getDate() == null) {
+            throw new IllegalArgumentException("Date not found");
+        }
+        valid(date);
+        if (checkBetterWindsurfingConditions(temperature, windSpeed)) {
+            return weatherForecastClient.readWeather(city, country, temperature, windSpeed);
+        }
+        return Optional.ofNullable(new WeatherResponseDto("","",0,0)).orElseThrow();
+    }
+
+
 
     private void valid(String date) {
         DateTimeFormatter formatter = DateTimeFormatter
@@ -23,10 +45,6 @@ class WeatherForecast implements WeatherForecastService {
                 .withResolverStyle(ResolverStyle.STRICT);
         LocalDate parseDate = LocalDate.parse(date, formatter);
         log.info(parseDate);
-    }
-
-    double generateAverageTemp(double temp) {
-        return DoubleStream.of(temp).average().orElseThrow();
     }
 
     private boolean checkBetterWindsurfingConditions(double temp, double windSpeed) {
