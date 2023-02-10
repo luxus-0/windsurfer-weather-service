@@ -34,7 +34,7 @@ class WeatherForecast {
         if (checkBetterWindsurfingConditions(temperature, windSpeed)) {
             return weatherForecastClient.readWeather(city, country, temperature, windSpeed);
         }
-        return Optional.ofNullable(new WeatherResponseDto("","",0,0)).orElseThrow();
+        return Optional.of(new WeatherResponseDto(null,null,0,0)).orElseThrow();
     }
 
 
