@@ -27,14 +27,16 @@ class WeatherForecast {
 
     public WeatherResponseDto retrieveWeatherForecast(WeatherResponse weatherResponse) {
         String date = weatherResponse.getDate();
-        if (date == null) {
-            throw new IllegalArgumentException("Date not found");
-        }
-        valid(date);
         String cityName = weatherResponse.getCity();
         String countryName = weatherResponse.getCountry();
         double wind = weatherResponse.getWindSpeed();
         double temperatureInCelcius = weatherResponse.getTemperature();
+
+        if (date == null) {
+            throw new IllegalArgumentException("Date not found");
+        }
+        valid(date);
+
         double betterWeatherForSurfing = findBestLocalizationForSurfer(wind, temperatureInCelcius);
 
        WeatherResponseDto weatherDto = new WeatherResponseDto(cityName, countryName, temperatureInCelcius, wind);
