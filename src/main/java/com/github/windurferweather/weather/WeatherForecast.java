@@ -7,8 +7,12 @@ import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import static java.util.Comparator.comparingDouble;
 import static java.util.Objects.requireNonNull;
 
 @Log4j2
@@ -22,21 +26,35 @@ class WeatherForecast {
     }
 
     public WeatherResponseDto retrieveWeatherForecast(WeatherResponse weatherResponse) {
-        double temperature = weatherResponse.getTemperature();
-        double windSpeed = weatherResponse.getWindSpeed();
-        String city = weatherResponse.getCity();
-        String country = weatherResponse.getCountry();
         String date = weatherResponse.getDate();
-        if (weatherResponse.getDate() == null) {
+        if (date == null) {
             throw new IllegalArgumentException("Date not found");
         }
         valid(date);
-        if (checkBetterWindsurfingConditions(temperature, windSpeed)) {
-            return weatherForecastClient.readWeather(city, country, temperature, windSpeed);
-        }
-        return Optional.of(new WeatherResponseDto(null,null,0,0)).orElseThrow();
+        String cityName = weatherResponse.getCity();
+        String countryName = weatherResponse.getCountry();
+        double wind = weatherResponse.getWindSpeed();
+        double temperatureInCelcius = weatherResponse.getTemperature();
+        double betterWeatherForSurfing = findBestLocalizationForSurfer(wind, temperatureInCelcius);
+
+       WeatherResponseDto weatherDto = new WeatherResponseDto(cityName, countryName, temperatureInCelcius, wind);
+
+        Stream.of(wind, temperatureInCelcius)
+                .filter(checkBestWeather -> checkConditionWeather(weatherResponse))
+                .findAny()
+                .map(toDto -> weatherDto)
+                .stream()
+                .max(comparingDouble(weatherForSurfer -> betterWeatherForSurfing))
+                .ifPresentOrElse(message -> log.info("weather suitable for windsurfing"),
+                        () -> log.info("weather not suitable for windsurfing"));
+        return Optional.of(new WeatherResponseDto(cityName, countryName, temperatureInCelcius, wind))
+                .orElseThrow();
     }
 
+    private boolean checkConditionWeather(WeatherResponse weatherResponse) {
+        return weatherResponse.getWindSpeed() >= 5 && weatherResponse.getWindSpeed() <= 18 &&
+                weatherResponse.getTemperature() >= 5 && weatherResponse.getTemperature() <= 35;
+    }
 
 
     private void valid(String date) {
@@ -47,17 +65,7 @@ class WeatherForecast {
         log.info(parseDate);
     }
 
-    private boolean checkBetterWindsurfingConditions(double temp, double windSpeed) {
-        if (windSpeed >= 5 && windSpeed <= 18 && temp >= 5 && temp <= 35) {
-            double bestLocationForSurfer = findBestLocForSurfer(windSpeed, temp);
-            log.info("Best Location for surfer: " + bestLocationForSurfer);
-            return true;
-        }
-        log.info("weather not suitable for windsurfing");
-        return false;
-    }
-
-    double findBestLocForSurfer(double windSpeed, double temp) {
+    double findBestLocalizationForSurfer(double windSpeed, double temp) {
         return (windSpeed * 3) + temp;
     }
 }
