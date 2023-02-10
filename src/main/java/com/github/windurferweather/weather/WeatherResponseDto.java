@@ -1,4 +1,4 @@
 package com.github.windurferweather.weather;
 
-record WeatherResponseDto(double windSpeed, double avgTemp, String city) {
+record WeatherResponseDto(String city, String country, double windSpeed, double avgTemp) {
 }
