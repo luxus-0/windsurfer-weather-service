@@ -4,35 +4,54 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Builder;
 
 import java.time.LocalDate;
 
 @Entity
-@Builder
 class WeatherResponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private double temp;
+
+    private String city;
+    private String country;
+    private double temperature;
     private double windSpeed;
-    private LocalDate date;
+    private String date;
 
     public WeatherResponse() {
     }
 
-    public WeatherResponse(double temp, double windSpeed, LocalDate date) {
-        this.temp = temp;
-        this.windSpeed = windSpeed;
-        this.date = date;
+    public Long getId() {
+        return id;
     }
 
-    public double getTemp() {
-        return temp;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setTemp(double temp) {
-        this.temp = temp;
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public double getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(double temperature) {
+        this.temperature = temperature;
     }
 
     public double getWindSpeed() {
@@ -43,11 +62,11 @@ class WeatherResponse {
         this.windSpeed = windSpeed;
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 }
