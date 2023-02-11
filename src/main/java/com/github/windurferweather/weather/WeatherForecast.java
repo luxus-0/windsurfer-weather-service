@@ -43,7 +43,7 @@ class WeatherForecast {
                 .stream()
                 .max(comparingDouble(weatherForSurfer -> betterWeatherForSurfing))
                 .ifPresentOrElse(message -> {
-                            weatherForecastClient.readWeather(cityName, countryName, temperatureInCelcius, wind);
+                            weatherForecastClient.readWeatherForLocalization(cityName, countryName);
                             log.info("weather good for windsurfing");
                         },
                         () -> log.info("weather not suitable for windsurfing"));
