@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Comparator.comparingDouble;
@@ -41,9 +42,12 @@ class WeatherForecast {
                 .map(toDto -> weatherDto)
                 .stream()
                 .max(comparingDouble(weatherForSurfer -> betterWeatherForSurfing))
-                .ifPresentOrElse(message -> weatherForecastClient.readWeather(cityName, countryName, temperatureInCelcius, wind),
+                .ifPresentOrElse(message -> {
+                            weatherForecastClient.readWeather(cityName, countryName, temperatureInCelcius, wind);
+                            log.info("weather good for windsurfing");
+                        },
                         () -> log.info("weather not suitable for windsurfing"));
-        return weatherDto;
+        return Optional.of(weatherDto).get();
     }
 
     boolean checkConditionWeather(WeatherResponse weatherResponse) {
