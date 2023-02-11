@@ -37,7 +37,7 @@ class WeatherForecast {
         WeatherResponseDto weatherDto = new WeatherResponseDto(cityName, countryName, temperatureInCelcius, wind);
 
         Stream.of(wind, temperatureInCelcius)
-                .filter(checkBestWeather -> checkConditionWeather(weatherResponse))
+                .filter(checkBestWeather -> checkGreatWeatherForWindSurfer(weatherResponse))
                 .findAny()
                 .map(toDto -> weatherDto)
                 .stream()
@@ -50,7 +50,7 @@ class WeatherForecast {
         return Optional.of(weatherDto).get();
     }
 
-    boolean checkConditionWeather(WeatherResponse weatherResponse) {
+    boolean checkGreatWeatherForWindSurfer(WeatherResponse weatherResponse) {
         return weatherResponse.getWindSpeed() >= 5 && weatherResponse.getWindSpeed() <= 18 &&
                 weatherResponse.getTemperature() >= 5 && weatherResponse.getTemperature() <= 35;
     }
