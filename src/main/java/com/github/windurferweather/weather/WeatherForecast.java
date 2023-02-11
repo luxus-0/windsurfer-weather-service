@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Comparator.comparingDouble;
@@ -31,10 +30,10 @@ class WeatherForecast {
         if (date == null) {
             throw new IllegalArgumentException("Date not found");
         }
-        weatherForecastClient.readWeatherByDate(weatherResponse.getDate());
+        valid(date);
 
         double betterWeatherForSurfing = findBestLocalizationForSurfer(wind, temperatureInCelcius);
-       WeatherResponseDto weatherDto = new WeatherResponseDto(cityName, countryName, temperatureInCelcius, wind);
+        WeatherResponseDto weatherDto = new WeatherResponseDto(cityName, countryName, temperatureInCelcius, wind);
 
         Stream.of(wind, temperatureInCelcius)
                 .filter(checkBestWeather -> checkConditionWeather(weatherResponse))
@@ -42,10 +41,9 @@ class WeatherForecast {
                 .map(toDto -> weatherDto)
                 .stream()
                 .max(comparingDouble(weatherForSurfer -> betterWeatherForSurfing))
-                .ifPresentOrElse(message -> log.info("weather suitable for windsurfing"),
+                .ifPresentOrElse(message -> weatherForecastClient.readWeather(cityName, countryName, temperatureInCelcius, wind),
                         () -> log.info("weather not suitable for windsurfing"));
-        return Optional.of(new WeatherResponseDto(cityName, countryName, temperatureInCelcius, wind))
-                .orElseThrow();
+        return weatherDto;
     }
 
     boolean checkConditionWeather(WeatherResponse weatherResponse) {
