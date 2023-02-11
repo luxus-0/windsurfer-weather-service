@@ -22,6 +22,13 @@ class WeatherResponse {
     public WeatherResponse() {
     }
 
+    public WeatherResponse(String city, String country, double temperature, double windSpeed) {
+        this.city = city;
+        this.country = country;
+        this.temperature = temperature;
+        this.windSpeed = windSpeed;
+    }
+
     public Long getId() {
         return id;
     }
