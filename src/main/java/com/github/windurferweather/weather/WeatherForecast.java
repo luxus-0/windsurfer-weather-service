@@ -3,17 +3,13 @@ package com.github.windurferweather.weather;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Comparator.comparingDouble;
-import static java.util.Objects.requireNonNull;
 
 @Log4j2
 @Service
@@ -25,7 +21,7 @@ class WeatherForecast {
         this.weatherForecastClient = weatherForecastClient;
     }
 
-    public WeatherResponseDto retrieveWeatherForecast(WeatherResponse weatherResponse) {
+    WeatherResponseDto retrieveWeatherForecast(WeatherResponse weatherResponse) {
         String date = weatherResponse.getDate();
         String cityName = weatherResponse.getCity();
         String countryName = weatherResponse.getCountry();
@@ -35,10 +31,9 @@ class WeatherForecast {
         if (date == null) {
             throw new IllegalArgumentException("Date not found");
         }
-        valid(date);
+        weatherForecastClient.readWeatherByDate(weatherResponse.getDate());
 
         double betterWeatherForSurfing = findBestLocalizationForSurfer(wind, temperatureInCelcius);
-
        WeatherResponseDto weatherDto = new WeatherResponseDto(cityName, countryName, temperatureInCelcius, wind);
 
         Stream.of(wind, temperatureInCelcius)
@@ -53,13 +48,13 @@ class WeatherForecast {
                 .orElseThrow();
     }
 
-    private boolean checkConditionWeather(WeatherResponse weatherResponse) {
+    boolean checkConditionWeather(WeatherResponse weatherResponse) {
         return weatherResponse.getWindSpeed() >= 5 && weatherResponse.getWindSpeed() <= 18 &&
                 weatherResponse.getTemperature() >= 5 && weatherResponse.getTemperature() <= 35;
     }
 
 
-    private void valid(String date) {
+    void valid(String date) {
         DateTimeFormatter formatter = DateTimeFormatter
                 .ofPattern("yyyy-MM-dd")
                 .withResolverStyle(ResolverStyle.STRICT);
