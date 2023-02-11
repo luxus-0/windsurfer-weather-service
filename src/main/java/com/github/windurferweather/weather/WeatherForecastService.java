@@ -32,11 +32,12 @@ class WeatherForecastService {
         WeatherResponse createWeather = new WeatherResponse(city, country, temperature, windSpeed);
         WeatherResponse weatherSaved = weatherRepository.save(createWeather);
 
-        WeatherResponseDto weatherResponseDto = weatherForecastClient.readWeatherForLocalization(weatherSaved.getCity(), weatherSaved.getCountry());
 
         double wind = weatherSaved.getWindSpeed();
         double temperatureInCelcius = weatherSaved.getTemperature();
         double betterWeatherForSurfing = findBestLocalizationForSurfer(wind, temperatureInCelcius);
+
+        WeatherResponseDto weatherResponseDto = weatherForecastClient.readWeatherForLocalization(weatherSaved.getCity(), weatherSaved.getCountry());
 
         return Stream.of(wind, temperatureInCelcius)
                 .filter(checkBestWeather -> checkGreatWeatherForWindSurfer(wind, temperatureInCelcius))
