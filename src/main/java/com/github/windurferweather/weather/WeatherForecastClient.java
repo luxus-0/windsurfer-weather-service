@@ -1,23 +1,24 @@
 package com.github.windurferweather.weather;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import static com.github.windurferweather.weather.WeatherMessageProvider.API_KEY;
 import static com.github.windurferweather.weather.WeatherMessageProvider.WEATHER_URL;
 
-@Component
+@Service
 class WeatherForecastClient {
 
-    private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    WeatherForecastClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    WeatherResponseDto readWeatherForLocalization(String city, String country) {
+       return restTemplate.getForObject(WEATHER_URL + "daily?city={city}&country={country}&key={api_key}",
+                WeatherResponseDto.class, city, country, API_KEY);
     }
 
-    WeatherResponseDto readWeather(String city, String country, double temperature, double windSpeed) {
-        return restTemplate.getForObject(WEATHER_URL + "daily?city={city}&country={country}&temp={temperature}&windSpeed={wind_spd}&key={api_key}",
-                WeatherResponseDto.class, city, country, temperature, windSpeed, API_KEY);
+    WeatherResponseDto readWeatherForCondition(double temperature, double windSpeed) {
+        return restTemplate.getForObject(WEATHER_URL + "daily?temp={temperature}&windSpeed={windSpeed}&key={api_key}",
+                WeatherResponseDto.class, temperature, windSpeed, API_KEY);
     }
 
     WeatherResponseDto readWeatherByDate(String date) {
