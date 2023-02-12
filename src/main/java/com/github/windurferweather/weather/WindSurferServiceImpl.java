@@ -35,9 +35,9 @@ class WindSurferServiceImpl implements WindSurferLocationService {
         String city = localization.keySet().stream().findAny().orElse("City not found");
         String country = localization.values().stream().findAny().orElse("Country not found");
 
-        double windSpeed = windSurferWeatherClient.readWindSurfingLocation(city, country).windSpeed();
-        double temperature = windSurferWeatherClient.readWindSurfingLocation(city, country).temperature();
-
+        WindSurferWeatherDto windSurferWeatherDto = windSurferWeatherClient.readWindSurfingLocation(city, country);
+        double windSpeed = windSurferWeatherDto.windSpeed();
+        double temperature = windSurferWeatherDto.temperature();
 
         return Stream.of(windSpeed, temperature)
                 .filter(checkBestWeather -> checkBestPlaceForWindSurfer(windSpeed, temperature))
@@ -49,7 +49,7 @@ class WindSurferServiceImpl implements WindSurferLocationService {
     }
 
     private boolean isValid(String date) {
-        return date.isEmpty() || !dateValidation.isValid(date);
+        return date.isEmpty() || !dateValidation.isValid(date) || dateValidation.isInRange(date);
     }
 
     private Map<String, String> readPlaceForWindSurfer() {
