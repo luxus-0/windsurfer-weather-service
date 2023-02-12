@@ -3,10 +3,10 @@ package com.github.windurferweather.weather;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import static com.github.windurferweather.weather.WeatherMessageProvider.*;
+import static com.github.windurferweather.weather.WindsurferWeatherMessageProvider.*;
 
 @Service
-class WeatherForecastClient {
+class WindSurferWeatherClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 

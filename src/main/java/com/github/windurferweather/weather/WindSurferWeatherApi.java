@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-class WeatherApi {
+class WindSurferWeatherApi {
 
     private final WindSurferServiceImpl windSurferServiceImpl;
 
-    WeatherApi(WindSurferServiceImpl windSurferServiceImpl) {
+    WindSurferWeatherApi(WindSurferServiceImpl windSurferServiceImpl) {
         this.windSurferServiceImpl = windSurferServiceImpl;
     }
 

@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 
 @Service
 @Log4j2
-class ValidationDate {
+class DateValidation {
     boolean isValid(String date) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setLenient(true);
