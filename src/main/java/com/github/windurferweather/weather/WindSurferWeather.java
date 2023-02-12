@@ -5,10 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-import java.time.LocalDate;
-
 @Entity
-class WeatherResponse {
+class WindSurferWeather {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,14 +17,15 @@ class WeatherResponse {
     private double windSpeed;
     private String date;
 
-    public WeatherResponse() {
+    public WindSurferWeather() {
     }
 
-    public WeatherResponse(String city, String country, double temperature, double windSpeed) {
+    public WindSurferWeather(String city, String country, double temperature, double windSpeed, String date) {
         this.city = city;
         this.country = country;
         this.temperature = temperature;
         this.windSpeed = windSpeed;
+        this.date = date;
     }
 
     public Long getId() {
