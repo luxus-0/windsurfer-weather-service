@@ -10,13 +10,13 @@ class WeatherForecastClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    WeatherResponseDto readWeatherForLocalization(String city, String country) {
-        return restTemplate.getForObject(WEATHER_URL + "daily?city={city}&country={country}&min_temp={minTemp}&max_temp={maxTemp}&key={api_key}",
-                WeatherResponseDto.class, city, country, MIN_TEMP, MAX_TEMP, API_KEY);
-    }
+    WindSurferWeatherDto readWindSurfingLocation(String city, String country) {
+        restTemplate.getForObject(WEATHER_URL + "daily?city={city}&country={country}&key={api_key}",
+                WindSurferWeatherDto.class, city, country, API_KEY);
 
-    WeatherResponseDto readWeatherByDate(String date) {
-        return restTemplate.getForObject(WEATHER_URL + "daily?valid_date={date}&key={api_key}",
-                WeatherResponseDto.class, date, API_KEY);
+        return WindSurferWeatherDto.builder()
+                .city(city)
+                .country(country)
+                .build();
     }
 }
