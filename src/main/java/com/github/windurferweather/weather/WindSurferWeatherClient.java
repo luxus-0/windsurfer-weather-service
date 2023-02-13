@@ -11,8 +11,8 @@ class WindSurferWeatherClient {
     private final RestTemplate restTemplate = new RestTemplate();
 
     WindSurferWeatherDto readWindSurfingLocation(String city, String country) {
-        restTemplate.getForObject(WEATHER_URL + "daily?city={city}&country={country}&key={api_key}",
-                WindSurferWeatherDto.class, city, country, API_KEY);
+        String weatherUrl = getWeatherUrl(city, country);
+        restTemplate.getForObject(weatherUrl, WindSurferWeatherDto.class, city, country, API_KEY);
 
         return WindSurferWeatherDto.builder()
                 .city(city)
