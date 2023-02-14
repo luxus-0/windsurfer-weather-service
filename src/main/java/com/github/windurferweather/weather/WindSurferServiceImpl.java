@@ -1,11 +1,9 @@
 package com.github.windurferweather.weather;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.windurferweather.weather.io.WindSurferWeatherWriter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-
-import java.net.URL;
 
 import static com.github.windurferweather.weather.WindsurferWeatherMessageProvider.*;
 
@@ -13,27 +11,17 @@ import static com.github.windurferweather.weather.WindsurferWeatherMessageProvid
 @Service
 class WindSurferServiceImpl implements WindSurferLocationService {
 
-    private final WindSurferWeatherClient windSurferWeatherClient;
-    private final DateValidatorImpl dateValidator;
+    private final WindSurferWeatherWriter windSurferWeatherWriter;
 
-    WindSurferServiceImpl(WindSurferWeatherClient windSurferWeatherClient, DateValidatorImpl dateValidator) {
-        this.windSurferWeatherClient = windSurferWeatherClient;
-        this.dateValidator = dateValidator;
+    WindSurferServiceImpl(WindSurferWeatherWriter windSurferWeatherWriter) {
+        this.windSurferWeatherWriter = windSurferWeatherWriter;
     }
 
     @Override
-    public WindSurferWeatherDto readWindSurfingLocationByDate(String datetime) {
-
-        WindSurferWeatherDto windSurferWeatherDto = windSurferWeatherClient.readWindSurfingByDate(datetime);
-
-        String city = windSurferWeatherDto.localizationDto().city();
-        String country = windSurferWeatherDto.localizationDto().country();
-        double temp = windSurferWeatherDto.temperature();
-        double windSpeed = windSurferWeatherDto.windSpeed();
-
-
-        return new WindSurferWeatherDto(new LocalizationDto(city, country), windSpeed, temp);
-
+    public WindSurferWeatherDto readWindSurfingLocationByDate(String datetime) throws Exception {
+        String windsurferWeather = windSurferWeatherWriter.writeFromWindSurferWeatherURLToFileCSV(datetime);
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(windsurferWeather, WindSurferWeatherDto.class);
     }
 
     boolean checkBestPlaceForWindSurfer(double wind, double temperature) {
