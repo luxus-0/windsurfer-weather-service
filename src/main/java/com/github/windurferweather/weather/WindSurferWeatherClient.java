@@ -10,13 +10,13 @@ class WindSurferWeatherClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    WindSurferWeatherDto readWindSurfingLocation(String city, String country) {
-        String weatherUrl = getWeatherUrl(city, country);
-        restTemplate.getForObject(weatherUrl, WindSurferWeatherDto.class, city, country, API_KEY);
+    WindSurferWeatherDto readWindSurfingByLocation(String city, String country) {
+        String url = WEATHER_URL + "daily?" + "city=" + city +"&country=" +country+ "&key=" + API_KEY;
+        return restTemplate.getForObject(url, WindSurferWeatherDto.class);
+    }
 
-        return WindSurferWeatherDto.builder()
-                .city(city)
-                .country(country)
-                .build();
+    WindSurferWeatherDto readWindSurfingByDate(String datetime) {
+        String url = WEATHER_URL + "daily?" + "date=" + datetime +"&valid_date=" +datetime+ "&key=" + API_KEY;
+        return restTemplate.getForObject(url, WindSurferWeatherDto.class);
     }
 }
