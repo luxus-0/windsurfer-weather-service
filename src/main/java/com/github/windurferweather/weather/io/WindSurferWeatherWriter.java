@@ -37,7 +37,6 @@ public class WindSurferWeatherWriter {
         String readWeather = windSurferWeatherReader.readWindSurferWeatherByDate(datetime);
         out.write(readWeather);
         StringBuilder windsurferWeather = windsurferWeatherBuilder.append(readWeather);
-        log.info(windsurferWeather);
         return windsurferWeather.toString();
     }
 }
