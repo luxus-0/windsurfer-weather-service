@@ -1,6 +1,5 @@
 package com.github.windurferweather.weather.io;
 
-import com.github.windurferweather.weather.PlaceValidation;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +13,12 @@ import static com.github.windurferweather.weather.WindsurferWeatherMessageProvid
 @Service
 public class WindSurferWeatherReader {
 
-    private static final PlaceValidation placeValidation = new PlaceValidation();
     private static final StringBuilder windsurferWeatherBuilder = new StringBuilder();
 
-    static String readWindSurferWeatherByLocalization(String city, String country) throws Exception {
-        placeValidation.isValid(city, country);
-        String weatherUrl = getWeatherUrl(city, country);
-        URL url = new URL(weatherUrl);
+    public String readWindSurferWeatherByDate(String datetime) throws Exception {
+        URL weatherUrl = new URL(getUrl(datetime));
 
-        BufferedReader windsurferWeatherReader = new BufferedReader(new InputStreamReader(url.openStream()));
+        BufferedReader windsurferWeatherReader = new BufferedReader(new InputStreamReader(weatherUrl.openStream()));
         String line;
 
         while ((line = windsurferWeatherReader.readLine()) != null){
