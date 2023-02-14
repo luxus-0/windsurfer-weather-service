@@ -21,7 +21,7 @@ class WindSurferWeatherApi {
     }
 
     @GetMapping("/weather/{date}")
-    WindSurferWeatherDto readWindSurferWeatherLocalizationByDate(@PathVariable String date) {
+    WindSurferWeatherDto readWindSurferWeatherLocalizationByDate(@PathVariable String date) throws Exception {
         return windSurferServiceImpl.readWindSurfingLocationByDate(date);
     }
 
