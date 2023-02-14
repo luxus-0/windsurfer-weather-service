@@ -1,65 +1,39 @@
 package com.github.windurferweather.weather;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
+import java.net.URL;
 
 import static com.github.windurferweather.weather.WindsurferWeatherMessageProvider.*;
-import static java.util.Comparator.comparingDouble;
 
 @Log4j2
 @Service
 class WindSurferServiceImpl implements WindSurferLocationService {
 
     private final WindSurferWeatherClient windSurferWeatherClient;
-    private final DateValidation dateValidation;
+    private final DateValidatorImpl dateValidator;
 
-
-    WindSurferServiceImpl(WindSurferWeatherClient windSurferWeatherClient, DateValidation dateValidation) {
+    WindSurferServiceImpl(WindSurferWeatherClient windSurferWeatherClient, DateValidatorImpl dateValidator) {
         this.windSurferWeatherClient = windSurferWeatherClient;
-        this.dateValidation = dateValidation;
+        this.dateValidator = dateValidator;
     }
 
     @Override
-    public WindSurferWeatherDto readWindSurfingLocationByDate(String date) {
-        Stream.of(date)
-                .filter(checkDate -> isValid(date))
-                .findAny()
-                .ifPresent(p -> log.info("Date is null or incorrect format"));
+    public WindSurferWeatherDto readWindSurfingLocationByDate(String datetime) {
 
-        Map<String, String> localization = readPlaceForWindSurfer();
+        WindSurferWeatherDto windSurferWeatherDto = windSurferWeatherClient.readWindSurfingByDate(datetime);
 
-        String city = localization.keySet().stream().findAny().orElse("City not found");
-        String country = localization.values().stream().findAny().orElse("Country not found");
-
-        WindSurferWeatherDto windSurferWeatherDto = windSurferWeatherClient.readWindSurfingLocation(city, country);
+        String city = windSurferWeatherDto.localizationDto().city();
+        String country = windSurferWeatherDto.localizationDto().country();
+        double temp = windSurferWeatherDto.temperature();
         double windSpeed = windSurferWeatherDto.windSpeed();
-        double temperature = windSurferWeatherDto.temperature();
 
-        return Stream.of(windSpeed, temperature)
-                .filter(checkBestWeather -> checkBestPlaceForWindSurfer(windSpeed, temperature))
-                .max(comparingDouble(weatherForSurfer -> findBestLocalizationForSurfer(windSpeed, temperature)))
-                .map(dto -> new WindSurferWeatherDto(city, country, windSpeed, temperature))
-                .stream()
-                .findAny()
-                .orElse(new WindSurferWeatherDto(city, country, windSpeed, temperature));
-    }
 
-    private boolean isValid(String date) {
-        return date.isEmpty() || !dateValidation.isValid(date) || dateValidation.isInRange(date);
-    }
+        return new WindSurferWeatherDto(new LocalizationDto(city, country), windSpeed, temp);
 
-    private Map<String, String> readPlaceForWindSurfer() {
-        Map<String, String> localization = new HashMap<>();
-        localization.put("Jastarnia", "Poland");
-        localization.put("Bridgetown","Barbarados");
-        localization.put("Fortaleza","Brasil");
-        localization.put("Pissouri","Cyprus");
-        localization.put("Le Monre","Mauritius");
-        return localization;
     }
 
     boolean checkBestPlaceForWindSurfer(double wind, double temperature) {
