@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 @Entity
-@Builder
-@AllArgsConstructor
 class WindSurferWeather {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +20,14 @@ class WindSurferWeather {
     private String date;
 
     public WindSurferWeather() {
+    }
+
+    public WindSurferWeather(String city, String country, double temperature, double windSpeed, String date) {
+        this.city = city;
+        this.country = country;
+        this.temperature = temperature;
+        this.windSpeed = windSpeed;
+        this.date = date;
     }
 
     public Long getId() {
