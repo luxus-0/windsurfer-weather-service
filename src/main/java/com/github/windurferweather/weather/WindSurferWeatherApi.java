@@ -1,32 +1,35 @@
 package com.github.windurferweather.weather;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.windurferweather.weather.io.WindSurferWeatherWriter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 class WindSurferWeatherApi {
 
-    private final WindSurferServiceImpl windSurferServiceImpl;
-    private final WindSurferWeatherWriter windSurferWeatherWriter;
+    private final WeatherServiceImpl windSurferServiceImpl;
 
-    WindSurferWeatherApi(WindSurferServiceImpl windSurferServiceImpl, WindSurferWeatherWriter windSurferWeatherWriter) {
+    WindSurferWeatherApi(WeatherServiceImpl windSurferServiceImpl) {
         this.windSurferServiceImpl = windSurferServiceImpl;
-        this.windSurferWeatherWriter = windSurferWeatherWriter;
     }
 
-    @GetMapping("/weather/{date}")
-    WindSurferWeatherDto readWindSurferWeatherLocalizationByDate(@PathVariable String date) throws Exception {
-        return windSurferServiceImpl.readWindSurfingLocationByDate(date);
+    @GetMapping("/windsurfing_Location/{date}")
+    ResponseEntity<WeatherResponseDto> readWindsurfingLocation(@PathVariable String date) {
+        WeatherResponseDto bestLocationForWindsurfing = windSurferServiceImpl.readWindsurfingLocation(date);
+        if(bestLocationForWindsurfing != null){
+            return ResponseEntity.ok(bestLocationForWindsurfing);
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/weather/write_to_csv_file/{datetime}")
-    String writeWeatherFromURLToCSV(@PathVariable String datetime) throws Exception {
-        return windSurferWeatherWriter.writeFromWindSurferWeatherURLToFileCSV(datetime);
+    @PostMapping("/create_location_weather/{city}/{country}")
+    ResponseEntity<LocationDto> addLocation(@PathVariable String city, @PathVariable String country) {
+        LocationDto location = windSurferServiceImpl.addLocation(city, country);
+        if (location != null) {
+            return ResponseEntity.ok().body(location);
+        }
+        return ResponseEntity.notFound().build();
     }
 }
