@@ -15,7 +15,7 @@ class WindSurferWeatherApi {
         this.windSurferServiceImpl = windSurferServiceImpl;
     }
 
-    @GetMapping("/windsurfing_Location/{date}")
+    @GetMapping("/windsurfing_location/{date}")
     ResponseEntity<WeatherResponseDto> readWindsurfingLocation(@PathVariable String date) {
         WeatherResponseDto bestLocationForWindsurfing = windSurferServiceImpl.readWindsurfingLocation(date);
         if(bestLocationForWindsurfing != null){
