@@ -12,8 +12,8 @@ import static com.github.windurferweather.weather.WindsurferWeatherMessageProvid
 class WeatherClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    WeatherResponseDto getWeatherForLocation(Object...objects) {
+    WeatherResponseDto getWeatherForLocation(String city, String country) {
         return restTemplate.getForObject(WEATHER_URL + "daily?city={city}&country={country}&key={API_KEY}",
-                WeatherResponseDto.class, objects, API_KEY);
+                WeatherResponseDto.class, city, country, API_KEY);
     }
 }
