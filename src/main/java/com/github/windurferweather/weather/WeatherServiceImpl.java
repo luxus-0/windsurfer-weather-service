@@ -27,7 +27,7 @@ class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public LocationDto readWindsurfingLocation(String date) throws Exception {
+    public WeatherResponseDto readWindsurfingLocation(String date) throws Exception {
         valid(date);
         List<LocationDto> locations = getLocations();
 
@@ -38,14 +38,17 @@ class WeatherServiceImpl implements WeatherService {
         double windSpeed = weatherResponseDto.weatherConditionDto().getWindSpeed();
         double temp = weatherResponseDto.weatherConditionDto().getTemperature();
 
+        LocationDto location = new LocationDto(city, country);
+        WeatherConditionDto weatherCondition = new WeatherConditionDto(windSpeed, temp);
+
         Stream.of(weatherResponseDto)
                 .filter(findBestConditionByWindAndTemp -> checkBestConditionForWindSurfer(windSpeed, temp))
                 .max(Comparator.comparingDouble(checkBestWeather -> calculateBestWeatherForWindsurfing(windSpeed, temp)))
                 .stream()
                 .findAny()
-                .ifPresent(showLocation -> new LocationDto(city, country));
+                .ifPresent(showLocationWithConditionWeather -> new WeatherResponseDto(location, weatherCondition, date));
 
-        return new LocationDto("","");
+        return new WeatherResponseDto(location, weatherCondition, date);
     }
 
     private String readCountry(List<LocationDto> locations) {
