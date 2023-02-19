@@ -111,4 +111,13 @@ class WeatherServiceImpl implements WeatherService {
     double calculateBestWeatherForWindsurfing(double windSpeed, double temp) {
         return (windSpeed * 3) + temp;
     }
+
+    public WindSurferWeather addWeather(WeatherResponseDto weather) {
+       String city = weather.locationDto().city();
+       String country = weather.locationDto().country();
+        double temperature = weather.weatherConditionDto().getTemperature();
+        double windSpeed = weather.weatherConditionDto().getWindSpeed();
+        String date = weather.date();
+        return windsurferWeatherRepository.save(new WindSurferWeather(city, country, windSpeed, temperature, date));
+    }
 }
