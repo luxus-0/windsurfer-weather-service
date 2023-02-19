@@ -1,19 +1,17 @@
 package com.github.windurferweather.weather;
 
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static com.github.windurferweather.weather.DateValidation.valid;
 import static com.github.windurferweather.weather.WindsurferWeatherMessageProvider.*;
-import static java.util.Objects.requireNonNull;
+import static java.util.Comparator.comparingDouble;
 
 @Log4j2
 @Service
@@ -43,7 +41,7 @@ class WeatherServiceImpl implements WeatherService {
 
         Stream.of(weatherResponseDto)
                 .filter(findBestConditionByWindAndTemp -> checkBestConditionForWindSurfer(windSpeed, temp))
-                .max(Comparator.comparingDouble(checkBestWeather -> calculateBestWeatherForWindsurfing(windSpeed, temp)))
+                .max(comparingDouble(checkBestWeather -> calculateBestWeatherForWindsurfing(windSpeed, temp)))
                 .stream()
                 .findAny()
                 .ifPresent(showLocationWithConditionWeather -> new WeatherResponseDto(location, weatherCondition, date));
@@ -77,30 +75,22 @@ class WeatherServiceImpl implements WeatherService {
 
     }
 
-    ResponseEntity<?> valid(String date) {
-        requireNonNull(date);
-        LocalDate dateWeather;
-        try {
-            dateWeather = LocalDate.parse(date);
-        } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        return ResponseEntity.ok(dateWeather);
-    }
-
     LocationDto addLocation(String city, String country) {
         WindSurferWeather localization = new WindSurferWeather();
         localization.setCity(city);
         localization.setCountry(country);
 
         WindSurferWeather localizationWeatherSaved = windsurferWeatherRepository.save(localization);
+        return getLocationDto(city, country, localizationWeatherSaved);
+    }
 
+    private LocationDto getLocationDto(String city, String country, WindSurferWeather localizationWeatherSaved) {
         return Set.of(localizationWeatherSaved)
                 .stream()
                 .filter(Objects::nonNull)
                 .map(toDto -> new LocationDto(city, country))
                 .findAny()
-                .orElse(new LocationDto("Empty city", "Empty country"));
+                .orElse(new LocationDto("", ""));
     }
 
     boolean checkBestConditionForWindSurfer(double windSpeed, double temperature) {
