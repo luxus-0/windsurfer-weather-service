@@ -113,8 +113,8 @@ class WeatherServiceImpl implements WeatherService {
     }
 
     public WindSurferWeather addWeather(WeatherResponseDto weather) {
-       String city = weather.locationDto().city();
-       String country = weather.locationDto().country();
+        String city = weather.locationDto().city();
+        String country = weather.locationDto().country();
         double temperature = weather.weatherConditionDto().getTemperature();
         double windSpeed = weather.weatherConditionDto().getWindSpeed();
         String date = weather.date();
