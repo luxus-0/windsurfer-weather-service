@@ -3,10 +3,7 @@ package com.github.windurferweather.weather;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static com.github.windurferweather.weather.DateValidation.valid;
@@ -27,52 +24,33 @@ class WeatherServiceImpl implements WeatherService {
     @Override
     public WeatherResponseDto readWindsurfingLocation(String date) throws Exception {
         valid(date);
-        List<LocationDto> locations = getLocations();
+        LocationDto localization = findLocalization();
 
-        String city = readCity(locations);
-        String country = readCountry(locations);
-
-        WeatherResponseDto weatherResponseDto = windsurferWeatherClient.getWeatherForLocation(city, country, date);
-        double windSpeed = weatherResponseDto.weatherConditionDto().getWindSpeed();
-        double temp = weatherResponseDto.weatherConditionDto().getTemperature();
-
-        LocationDto location = new LocationDto(city, country);
-        WeatherConditionDto weatherCondition = new WeatherConditionDto(windSpeed, temp);
+        WeatherResponseDto weatherResponseDto = windsurferWeatherClient.getWeatherForLocation(localization.city(), localization.country(), date);
+        double windSpeed = weatherResponseDto.windSpeed();
+        double temp = weatherResponseDto.temp();
 
         Stream.of(weatherResponseDto)
                 .filter(findBestConditionByWindAndTemp -> checkBestConditionForWindSurfer(windSpeed, temp))
                 .max(comparingDouble(checkBestWeather -> calculateBestWeatherForWindsurfing(windSpeed, temp)))
                 .stream()
                 .findAny()
-                .ifPresent(showLocationWithConditionWeather -> new WeatherResponseDto(location, weatherCondition, date));
+                .ifPresent(showLocationWithConditionWeather -> new WeatherResponseDto(findLocalization().city(), findLocalization().country(), windSpeed, temp, date));
 
-        return new WeatherResponseDto(location, weatherCondition, date);
+        return new WeatherResponseDto(findLocalization().city(), findLocalization().country(), windSpeed, temp, date);
     }
 
-    private String readCountry(List<LocationDto> locations) {
-        return locations
+    private LocationDto findLocalization() {
+        return Map.of("Jastarnia", "Polska",
+                        "Bridgetown", "Barbarados",
+                        "Fortaleza", "Brazylia",
+                        "Pissouri", "Cypr",
+                        "Le_Monre", "Mauritius")
+                .entrySet()
                 .stream()
-                .map(LocationDto::country)
                 .findAny()
-                .orElse("");
-    }
-
-    private String readCity(List<LocationDto> locations) {
-        return locations
-                .stream()
-                .map(LocationDto::city)
-                .findAny()
-                .orElse("");
-    }
-
-    private List<LocationDto> getLocations() {
-        return List.of(
-                new LocationDto("Jastarnia", "Polska"),
-                new LocationDto("Bridgetown", "Barbarados"),
-                new LocationDto("Fortaleza", "Brazylia"),
-                new LocationDto("Pissouri", "Cypr"),
-                new LocationDto("Le Monre", "Mauritius"));
-
+                .map(localized -> new LocationDto(localized.getKey(), localized.getValue()))
+                .orElse(new LocationDto("", ""));
     }
 
     LocationDto addLocation(String city, String country) {
@@ -103,11 +81,12 @@ class WeatherServiceImpl implements WeatherService {
     }
 
     public WindSurferWeather addWeather(WeatherResponseDto weather) {
-        String city = weather.locationDto().city();
-        String country = weather.locationDto().country();
-        double temperature = weather.weatherConditionDto().getTemperature();
-        double windSpeed = weather.weatherConditionDto().getWindSpeed();
-        String date = weather.date();
-        return windsurferWeatherRepository.save(new WindSurferWeather(city, country, windSpeed, temperature, date));
+        WindSurferWeather windSurferWeather = WindSurferWeather.builder()
+                .city(weather.city())
+                .country(weather.country())
+                .windSpeed(weather.windSpeed())
+                .temperature(weather.temp())
+                .build();
+        return windsurferWeatherRepository.save(windSurferWeather);
     }
 }
