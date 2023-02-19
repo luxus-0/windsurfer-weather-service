@@ -23,16 +23,16 @@ class WindSurferWeatherApi {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/windsurfing_location/{date}")
-    ResponseEntity<LocationDto> readBestLocationForWindsurfingByDate(@PathVariable String date) throws Exception {
-        LocationDto bestLocationForWindsurfing = weatherService.readWindsurfingLocation(date);
+    @GetMapping("/best_windsurfing_location/{date}")
+    ResponseEntity<WeatherResponseDto> readBestLocationForWindsurfing(@PathVariable String date) throws Exception {
+        WeatherResponseDto bestLocationForWindsurfing = weatherService.readWindsurfingLocation(date);
         if(bestLocationForWindsurfing != null){
             return ResponseEntity.ok(bestLocationForWindsurfing);
         }
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/add_location_weather/{city}/{country}")
+    @PostMapping("/add_weather_forecast/{city}/{country}")
     ResponseEntity<LocationDto> addLocation(@PathVariable String city, @PathVariable String country) {
         LocationDto location = weatherService.addLocation(city, country);
         if (location != null) {
