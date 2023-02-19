@@ -32,12 +32,18 @@ class WindSurferWeatherApi {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/add_weather_forecast/{city}/{country}")
+    @PostMapping("/add_weather_location/{city}/{country}")
     ResponseEntity<LocationDto> addLocation(@PathVariable String city, @PathVariable String country) {
         LocationDto location = weatherService.addLocation(city, country);
         if (location != null) {
             return ResponseEntity.ok().body(location);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/add_weather")
+    ResponseEntity<WindSurferWeather> addWeatherForecast(@RequestBody WeatherResponseDto weatherResponse) {
+        WindSurferWeather createWeather = weatherService.addWeather(weatherResponse);
+        return ResponseEntity.ok(createWeather);
     }
 }
