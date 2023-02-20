@@ -7,45 +7,58 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Builder
-@AllArgsConstructor
-class WindSurferWeather {
+class ForecastWeather {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String city;
-    private String country;
+    private String city_name;
+    private String country_name;
+    private String lat;
+    private String lon;
     private double temperature;
     private double windSpeed;
     private String date;
+    List<Object> data = new ArrayList<>();
 
-    public WindSurferWeather() {
+    public ForecastWeather() {
     }
 
-    public Long getId() {
-        return id;
+    public String getCity_name() {
+        return city_name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCity_name(String city_name) {
+        this.city_name = city_name;
     }
 
-    public String getCity() {
-        return city;
+    public String getCountry_name() {
+        return country_name;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setCountry_name(String country_name) {
+        this.country_name = country_name;
     }
 
-    public String getCountry() {
-        return country;
+    public String getLat() {
+        return lat;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+
+    public String getLon() {
+        return lon;
+    }
+
+    public void setLon(String lon) {
+        this.lon = lon;
     }
 
     public double getTemperature() {
@@ -70,5 +83,13 @@ class WindSurferWeather {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public List<Object> getData() {
+        return data;
+    }
+
+    public void setData(List<Object> data) {
+        this.data = data;
     }
 }
