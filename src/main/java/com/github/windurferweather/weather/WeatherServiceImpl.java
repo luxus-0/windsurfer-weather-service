@@ -20,12 +20,6 @@ import static com.github.windurferweather.weather.WeatherEndpoint.ENDPOINT;
 class WeatherServiceImpl implements WeatherService {
     private final WindsurferWeatherRepository windsurferWeatherRepository;
     private final WeatherClient weatherClient;
-    private static final String WIND_SPEED = "wind_spd";
-    private static final String TEMPERATURE = "temp";
-    private static final String CITY = "city_name";
-    private static final String VALID_DATE = "valid_date";
-
-    private static final String DATA = "data";
 
     WeatherServiceImpl(WindsurferWeatherRepository windsurferWeatherRepository, WeatherClient weatherClient) {
         this.windsurferWeatherRepository = windsurferWeatherRepository;
