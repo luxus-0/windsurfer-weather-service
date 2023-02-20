@@ -9,27 +9,15 @@ import static com.github.windurferweather.weather.BestLocationWeatherForWindsurf
 @RestController
 @Log4j2
 class WindSurferWeatherApi {
-
-    private final WeatherClient weatherClient;
     private final WeatherServiceImpl weatherService;
 
-    WindSurferWeatherApi(WeatherClient weatherClient, WeatherServiceImpl weatherService) {
-        this.weatherClient = weatherClient;
+    WindSurferWeatherApi(WeatherServiceImpl weatherService) {
         this.weatherService = weatherService;
     }
 
-    @GetMapping("/windsurfing_location")
-    ResponseEntity<WeatherResponseDto> readWindsurfingLocation(@RequestParam String city, @RequestParam String country, @RequestParam String date) throws Exception {
-        WeatherResponseDto weatherForLocation = weatherClient.getWeatherForLocation(city, country, date);
-        if (weatherForLocation != null) {
-            return ResponseEntity.ok(weatherForLocation);
-        }
-        return ResponseEntity.notFound().build();
-    }
-
     @GetMapping("/best_windsurfing_location/{date}")
-    ResponseEntity<WeatherResponseDto> readBestLocationForWindsurfing(@PathVariable String date) throws Exception {
-        WeatherResponseDto bestLocationForWindsurfing = weatherService.readWindsurfingLocation(date);
+    ResponseEntity<WeatherConditionDto> readBestLocationForWindsurfing(@PathVariable String date) {
+        WeatherConditionDto bestLocationForWindsurfing = weatherService.readWindsurfingLocation(date);
         if (bestLocationForWindsurfing != null) {
             showBestLocationForWindsurfer(bestLocationForWindsurfing);
             return ResponseEntity.ok(bestLocationForWindsurfing);
@@ -37,19 +25,9 @@ class WindSurferWeatherApi {
         return ResponseEntity.notFound().build();
     }
 
-
-    @PostMapping("/add_weather_location/{city}/{country}")
-    ResponseEntity<LocationDto> addLocation(@PathVariable String city, @PathVariable String country) {
-        LocationDto location = weatherService.addLocation(city, country);
-        if (location != null) {
-            return ResponseEntity.ok().body(location);
-        }
-        return ResponseEntity.notFound().build();
-    }
-
     @PostMapping("/add_weather")
-    ResponseEntity<WindSurferWeather> addWeatherForecast(@RequestBody WeatherResponseDto weatherResponse) {
-        WindSurferWeather createWeather = weatherService.addWeather(weatherResponse);
+    ResponseEntity<ForecastWeather> addWeatherForecast(@RequestBody WeatherResponseDto weatherResponse) {
+        ForecastWeather createWeather = weatherService.addWeather(weatherResponse);
         return ResponseEntity.ok(createWeather);
     }
 }
