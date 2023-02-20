@@ -4,8 +4,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.github.windurferweather.weather.BestLocationWeatherForWindsurferMessage.showBestLocationForWindsurfer;
-
 @RestController
 @Log4j2
 class WindSurferWeatherApi {
@@ -19,7 +17,6 @@ class WindSurferWeatherApi {
     ResponseEntity<WeatherConditionDto> readBestLocationForWindsurfing(@PathVariable String date) {
         WeatherConditionDto bestLocationForWindsurfing = weatherService.readWindsurfingLocation(date);
         if (bestLocationForWindsurfing != null) {
-            showBestLocationForWindsurfer(bestLocationForWindsurfing);
             return ResponseEntity.ok(bestLocationForWindsurfing);
         }
         return ResponseEntity.notFound().build();

@@ -12,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Builder
+@AllArgsConstructor
 class ForecastWeather {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
