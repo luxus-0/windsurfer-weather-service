@@ -107,10 +107,6 @@ class WeatherServiceImpl implements WeatherService {
                 temperature >= MIN_TEMP && temperature <= MAX_TEMP;
     }
 
-    double calculateBestWeatherForWindsurfing(double windSpeed, double temp) {
-        return (windSpeed * 3) + temp;
-    }
-
     public ForecastWeather addWeather(WeatherResponseDto weather) {
         ForecastWeather forecastWeather = ForecastWeather.builder()
                 .city_name(weather.city())
