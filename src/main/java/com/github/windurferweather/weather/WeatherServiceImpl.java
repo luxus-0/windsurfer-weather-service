@@ -39,12 +39,8 @@ class WeatherServiceImpl implements WeatherService {
                     String city_name = weatherResponse.getCity_name();
                     String country_code = weatherResponse.getCountry_code();
 
-                    JsonNode jsonNode;
-                    try {
-                        jsonNode = getNode(city_name, country_code);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    JsonNode jsonNode = getJsonNode(city_name, country_code);
+
                     double avgTemperature = getAvgTemperature(jsonNode);
                     double avgWindSpeed = getAvgWindSpeed(jsonNode);
 
@@ -66,6 +62,16 @@ class WeatherServiceImpl implements WeatherService {
         );
     }
 
+    private JsonNode getJsonNode(String city_name, String country_code) {
+        JsonNode jsonNode;
+        try {
+            jsonNode = getNode(city_name, country_code);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return jsonNode;
+    }
+
     private JsonNode getNode(String city_name, String country_code) throws Exception {
             ObjectMapper objectMapper = new ObjectMapper();
             String url_weather = getUrl(city_name, country_code);
@@ -83,7 +89,6 @@ class WeatherServiceImpl implements WeatherService {
         return locationData.getWind_spd() >= MIN_WIND && locationData.getWind_spd() <= MAX_WIND
                 && locationData.getTemp() >= MIN_TEMP && locationData.getTemp() <= MAX_TEMP;
     }
-
     private double getAvgTemperature(JsonNode dataNode) {
         return Stream.of(dataNode)
                 .mapToDouble(data -> data.get(TEMPERATURE).asDouble())
