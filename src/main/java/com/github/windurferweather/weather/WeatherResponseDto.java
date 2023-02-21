@@ -1,7 +1,21 @@
 package com.github.windurferweather.weather;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
-public record WeatherResponseDto(String city, String country, double windSpeed, double temp, String date) {
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class WeatherResponseDto {
+        private String city_name;
+        private String country_code;
+        private double wind_spd;
+        private double temp;
+        private String date;
 }
