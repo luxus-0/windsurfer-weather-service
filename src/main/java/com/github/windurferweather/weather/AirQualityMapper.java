@@ -5,7 +5,7 @@ import java.util.List;
 public class AirQualityMapper {
     static AirQuality mapToAirQuality(AirQualityDto airQualityDto) {
 
-        Data data = new Data(airQualityDto.getAqi());
+        Data data = getData(airQualityDto);
 
         return AirQuality.builder()
                 .city(airQualityDto.getCity())
@@ -13,5 +13,9 @@ public class AirQualityMapper {
                 .pm10(airQualityDto.getPm10())
                 .pm25(airQualityDto.getPm25())
                 .build();
+    }
+
+    static Data getData(AirQualityDto airQualityDto) {
+        return new Data(airQualityDto.getAqi());
     }
 }
