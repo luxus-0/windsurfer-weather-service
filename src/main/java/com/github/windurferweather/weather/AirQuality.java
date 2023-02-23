@@ -13,9 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class AirQuality {
     @Id
@@ -25,4 +22,51 @@ public class AirQuality {
     private List<Data> data = new ArrayList<>();
     private int pm25;
     private int pm10;
+
+    public AirQuality(String city, List<Data> data, int pm25, int pm10) {
+        this.city = city;
+        this.data = data;
+        this.pm25 = pm25;
+        this.pm10 = pm10;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public List<Data> getData() {
+        return data;
+    }
+
+    public void setData(List<Data> data) {
+        this.data = data;
+    }
+
+    public int getPm25() {
+        return pm25;
+    }
+
+    public void setPm25(int pm25) {
+        this.pm25 = pm25;
+    }
+
+    public int getPm10() {
+        return pm10;
+    }
+
+    public void setPm10(int pm10) {
+        this.pm10 = pm10;
+    }
 }
