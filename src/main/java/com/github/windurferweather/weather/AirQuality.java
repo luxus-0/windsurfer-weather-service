@@ -1,30 +1,27 @@
 package com.github.windurferweather.weather;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class AirQuality {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String city;
-    private List<Data> data;
+
+   @OneToOne
+    private Data data;
     private double pm25;
     private double pm10;
-
-    public AirQuality(String city, List<Data> data, double pm25, double pm10) {
-        this.city = city;
-        this.data = data;
-        this.pm25 = pm25;
-        this.pm10 = pm10;
-    }
 
     public Long getId() {
         return id;
@@ -42,11 +39,11 @@ public class AirQuality {
         this.city = city;
     }
 
-    public List<Data> getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(List<Data> data) {
+    public void setData(Data data) {
         this.data = data;
     }
 
