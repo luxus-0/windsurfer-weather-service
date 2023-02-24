@@ -9,12 +9,11 @@ public class AirQualityMapper {
 
         return AirQuality.builder()
                 .city(airQualityDto.getCity())
-                .data(List.of(data))
+                .data(data)
                 .pm10(airQualityDto.getPm10())
                 .pm25(airQualityDto.getPm25())
                 .build();
     }
-
     static Data getData(AirQualityDto airQualityDto) {
         return new Data(airQualityDto.getAqi());
     }
