@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class AirQualityDto {
     private String city;
     private int aqi;
-    private int pm25;
-    private int pm10;
+    private double pm25;
+    private double pm10;
 }
