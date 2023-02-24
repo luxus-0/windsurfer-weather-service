@@ -49,14 +49,19 @@ class AirQualityImpl {
     private AirQuality createAirQuality(AirQualityDto airQualityDto) {
         Data data = getData(airQualityDto);
         AirQuality airQuality = AirQuality.builder()
-                .data(List.of(data))
+                .data(data)
                 .city(airQualityDto.getCity())
                 .pm10(airQualityDto.getPm10())
                 .pm25(airQualityDto.getPm25())
                 .build();
 
         AirQuality airQualitySaved = airQualityRepository.save(airQuality);
-        return new AirQuality(airQualitySaved.getCity(), airQualitySaved.getData(), airQualitySaved.getPm25(), airQualitySaved.getPm10());
+        return AirQuality.builder()
+                .city(airQualitySaved.getCity())
+                .data(airQualitySaved.getData())
+                .pm10(airQualitySaved.getPm10())
+                .pm25(airQualitySaved.getPm25())
+                .build();
     }
 
     private static AirQuality retrieveAirQuality(AirQualityDto airQualityDto) {
@@ -90,11 +95,5 @@ class AirQualityImpl {
         theBiggestPm10.ifPresent(printTheBiggestPollutionPm10 -> log.info("Biggest Pollution by PM10 is: " + theBiggestPm10.get()));
 
         return theBiggestPm10.orElse(0d);
-    }
-
-    private AirQuality createPM10(AirQuality p) {
-        return AirQuality.builder()
-                .pm10(p.getPm10())
-                .build();
     }
 }
