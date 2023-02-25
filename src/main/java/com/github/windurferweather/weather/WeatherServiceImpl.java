@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.github.windurferweather.weather.LocationCreator.createLocations;
 import static com.github.windurferweather.weather.WeatherConstant.*;
 import static java.util.Comparator.comparingDouble;
 
@@ -50,16 +51,6 @@ class WeatherServiceImpl implements WeatherService {
                 .max(comparingDouble(this::calculateForWindsurfingLocation))
                 .map(location -> new WeatherResponseDto(location.getCity_name(), location.getCountry_code(), location.getWind_spd(), location.getTemp(), location.getDate()))
                 .orElse(null);
-    }
-
-    private Map<String, String> createLocations() {
-        return Map.of(
-                "Jastarnia", "PL",
-                "Bridgetown", "BB",
-                "Fortaleza", "BR",
-                "Pissouri", "CY",
-                "Le Mont", "CH"
-        );
     }
 
     private JsonNode getJsonNode(String city_name, String country_code) {
