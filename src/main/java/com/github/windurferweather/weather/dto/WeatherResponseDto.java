@@ -1,4 +1,4 @@
-package com.github.windurferweather.weather;
+package com.github.windurferweather.weather.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

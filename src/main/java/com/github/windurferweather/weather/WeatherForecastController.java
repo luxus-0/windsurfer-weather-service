@@ -1,5 +1,6 @@
 package com.github.windurferweather.weather;
 
+import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
