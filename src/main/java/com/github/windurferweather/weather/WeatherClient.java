@@ -1,22 +1,24 @@
 package com.github.windurferweather.weather;
 
-import com.github.windurferweather.config.ConfigurationClient;
 import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import static com.github.windurferweather.weather.WeatherConstant.getUrl;
+import java.util.Arrays;
+
+import static com.github.windurferweather.weather.WeatherConstant.*;
 
 @Service
 class WeatherClient {
 
-    private final ConfigurationClient client;
+ private final RestTemplate restTemplate = new RestTemplate();
 
-    WeatherClient(ConfigurationClient client) {
-        this.client = client;
-    }
+    WeatherResponseDto getForecastWeather(String city, String country, String date) {
 
-    WeatherResponseDto getForecastWeather(String city, String country_code) {
-        String url = getUrl(city, country_code);
-        return client.getRestTemplate().getForObject(url, WeatherResponseDto.class, city, country_code);
+        return restTemplate.getForObject(ENDPOINT +
+                "?city=" + city +
+                "&country=" + country +
+                "&valid_date=" + date +
+                "&key=" + API_KEY, WeatherResponseDto.class, city, country, date);
     }
 }

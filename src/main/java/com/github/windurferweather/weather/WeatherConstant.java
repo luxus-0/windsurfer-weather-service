@@ -13,8 +13,4 @@ class WeatherConstant {
     public static final String WIND_SPEED = "wind_spd";
     public static final String TEMPERATURE = "temp";
     public static final String DATA = "data";
-
-    public static String getUrl(String city, String country) {
-        return ENDPOINT +"?city=" + city + "&country=" + country + "&key=" + API_KEY;
-    }
 }
