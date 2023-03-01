@@ -11,20 +11,35 @@ class WeatherServiceImplTest {
 
 
     @Test
-    public void shouldReturnTheBestLocationWithRangeSuitableCondition(){
+    public void shouldReturnIncorrectCityWhenUserGaveCityWithConcreteDate(){
 
         WeatherResponseDto weatherData = WeatherResponseDto.builder()
                 .date("2023-03-05")
                 .city_name("Warsaw")
-                .temp(22.5)
-                .wind_spd(10.0)
                 .build();
 
-        WeatherResponseDto weatherExcepted = weatherService.readWindsurfingLocation(weatherData.getDate());
+        WeatherResponseDto weatherExcepted = weatherService.readTheBestLocationForWindsurfing(weatherData.getDate());
 
-        WeatherResponseDto weatherActual = weatherService.readWindsurfingLocation("2022-03-07");
-
-        Assertions.assertEquals(weatherExcepted.getDate(), weatherActual.getDate());
+        Assertions.assertNotEquals(weatherExcepted.getCity_name(), "Fortaleza");
     }
 
+    @Test
+    public void shouldReturnCorrectCountryCodeWhenUserGaveCountryCodeWithConcreteDate(){
+
+        String date = "2023-01-03";
+
+        String country_code_excepted = weatherService.readTheBestLocationForWindsurfing(date).getCountry_code();
+
+        Assertions.assertEquals(country_code_excepted, "BB");
+    }
+
+    @Test
+    public void shouldReturnIncorrectCountryCodeWhenUserGaveCountryCodeWithConcreteDate(){
+
+        String date = "2023-01-03";
+
+        String country_code_excepted = weatherService.readTheBestLocationForWindsurfing(date).getCountry_code();
+
+        Assertions.assertNotEquals(country_code_excepted, "ZZ");
+    }
 }
