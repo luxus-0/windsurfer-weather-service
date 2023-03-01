@@ -1,16 +1,15 @@
 package com.github.windurferweather.weather;
 
-import com.github.windurferweather.config.ConfigurationClient;
 import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 
 class WeatherServiceImplTest {
-
-    private final WeatherClient weatherClient = new WeatherClient(new ConfigurationClient());
+    private final WeatherClient weatherClient = new WeatherClient();
     private final WeatherServiceImpl weatherService = new WeatherServiceImpl(weatherClient);
+
+
     @Test
     public void shouldReturnTheBestLocationWithRangeSuitableCondition(){
 
@@ -21,11 +20,11 @@ class WeatherServiceImplTest {
                 .wind_spd(10.0)
                 .build();
 
-        String locationExpected = weatherService.readWindsurfingLocation(weatherData.getDate()).getCity_name();
+        WeatherResponseDto weatherExcepted = weatherService.readWindsurfingLocation(weatherData.getDate());
 
-        Mockito.when(weatherService.readWindsurfingLocation(Mockito.anyString())).then(p -> !weatherData.getDate().isEmpty());
+        WeatherResponseDto weatherActual = weatherService.readWindsurfingLocation("2022-03-07");
 
-        Assertions.assertEquals(locationExpected, "Fortaleza");
+        Assertions.assertEquals(weatherExcepted.getDate(), weatherActual.getDate());
     }
 
 }
