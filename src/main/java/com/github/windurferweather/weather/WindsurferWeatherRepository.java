@@ -2,5 +2,5 @@ package com.github.windurferweather.weather;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface WindsurferWeatherRepository extends JpaRepository<ForecastWeather, Long> {
+public interface WindsurferWeatherRepository extends JpaRepository<Weather, Long> {
 }
