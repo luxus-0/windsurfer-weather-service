@@ -11,14 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 class WeatherForecastController {
     private final WeatherServiceImpl weatherService;
-
-
     WeatherForecastController(WeatherServiceImpl weatherService) {
         this.weatherService = weatherService;
     }
 
     @GetMapping("location_for_windsurfing/{date}")
-    ResponseEntity<WeatherResponseDto> readBestLocationForWindsurfing(@PathVariable String date) throws Exception {
+    ResponseEntity<WeatherResponseDto> readBestLocationForWindsurfing(@PathVariable String date) {
         WeatherResponseDto weatherResponseDto = weatherService.readWindsurfingLocation(date);
         if(weatherResponseDto != null){
             return ResponseEntity.ok(weatherResponseDto);
