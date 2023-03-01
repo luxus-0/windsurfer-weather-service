@@ -26,7 +26,7 @@ class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
-    public WeatherResponseDto readWindsurfingLocation(String date) {
+    public WeatherResponseDto readTheBestLocationForWindsurfing(String date) {
         Map<String, String> locations = createLocations();
 
         return locations.entrySet().stream()
@@ -37,7 +37,7 @@ class WeatherServiceImpl implements WeatherService {
                     String country_code = weatherResponse.getCountry_code();
 
                     ObjectMapper objectMapper = new ObjectMapper();
-                    String url_weather = ENDPOINT + "?city=" + city_name + "&country=" + country_code + "&valid_date=" + date + "&key=" + API_KEY;
+                    String url_weather = getUrlWeather(date, city_name, country_code);
                     String replacementUrl = url_weather.replace(" ", "%20");
                     URL url = getUrl(replacementUrl);
                     JsonNode data = getJsonNode(objectMapper, url);
@@ -53,7 +53,11 @@ class WeatherServiceImpl implements WeatherService {
                 .orElse(null);
     }
 
-    private static URL getUrl(String replacementUrl) {
+    private String getUrlWeather(String date, String city_name, String country_code) {
+        return ENDPOINT + "?city=" + city_name + "&country=" + country_code + "&valid_date=" + date + "&key=" + API_KEY;
+    }
+
+    private URL getUrl(String replacementUrl) {
         URL url;
         try {
             url = new URL(replacementUrl);
@@ -63,7 +67,7 @@ class WeatherServiceImpl implements WeatherService {
         return url;
     }
 
-    private static JsonNode getJsonNode(ObjectMapper objectMapper, URL url) {
+    private JsonNode getJsonNode(ObjectMapper objectMapper, URL url) {
         JsonNode rootNode;
         try {
             rootNode = objectMapper.readTree(url);
