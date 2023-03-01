@@ -17,7 +17,7 @@ class WeatherForecastController {
 
     @GetMapping("location_for_windsurfing/{date}")
     ResponseEntity<WeatherResponseDto> readBestLocationForWindsurfing(@PathVariable String date) {
-        WeatherResponseDto weatherResponseDto = weatherService.readWindsurfingLocation(date);
+        WeatherResponseDto weatherResponseDto = weatherService.readTheBestLocationForWindsurfing(date);
         if(weatherResponseDto != null){
             return ResponseEntity.ok(weatherResponseDto);
         }
