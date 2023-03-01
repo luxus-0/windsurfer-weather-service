@@ -6,10 +6,9 @@ import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -28,24 +27,23 @@ class WeatherServiceImpl implements WeatherService {
 
     @Override
     public WeatherResponseDto readWindsurfingLocation(String date) {
-        DateTimeFormatter df = new DateTimeFormatterBuilder()
-                .parseCaseInsensitive()
-                .appendPattern("dd-MMM-yyyy")
-                .toFormatter(Locale.ENGLISH);
-
         Map<String, String> locations = createLocations();
 
         return locations.entrySet().stream()
                 .map(location -> {
-                    WeatherResponseDto weatherResponse = weatherClient.getForecastWeather(location.getKey(), location.getValue());
+                    WeatherResponseDto weatherResponse = weatherClient.getForecastWeather(location.getKey(), location.getValue(), date);
 
                     String city_name = weatherResponse.getCity_name();
                     String country_code = weatherResponse.getCountry_code();
 
-                    JsonNode jsonNode = getJsonNode(city_name, country_code);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String url_weather = ENDPOINT + "?city=" + city_name + "&country=" + country_code + "&valid_date=" + date + "&key=" + API_KEY;
+                    String replacementUrl = url_weather.replace(" ", "%20");
+                    URL url = getUrl(replacementUrl);
+                    JsonNode data = getJsonNode(objectMapper, url);
 
-                    double avgTemperature = getAvgTemperature(jsonNode);
-                    double avgWindSpeed = getAvgWindSpeed(jsonNode);
+                    double avgTemperature = getAvgTemperature(data);
+                    double avgWindSpeed = getAvgWindSpeed(data);
 
                     return new WeatherResponseDto(city_name, country_code, avgWindSpeed, avgTemperature, date);
                 })
@@ -55,6 +53,27 @@ class WeatherServiceImpl implements WeatherService {
                 .orElse(null);
     }
 
+    private static URL getUrl(String replacementUrl) {
+        URL url;
+        try {
+            url = new URL(replacementUrl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        return url;
+    }
+
+    private static JsonNode getJsonNode(ObjectMapper objectMapper, URL url) {
+        JsonNode rootNode;
+        try {
+            rootNode = objectMapper.readTree(url);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return rootNode.path(DATA).get(0);
+    }
+
+
     private Map<String, String> createLocations() {
         return Map.of(
                 "Jastarnia", "PL",
@@ -63,25 +82,6 @@ class WeatherServiceImpl implements WeatherService {
                 "Pissouri", "CY",
                 "Le Mont", "CH"
         );
-    }
-
-    private JsonNode getJsonNode(String city_name, String country_code) {
-        JsonNode jsonNode;
-        try {
-            jsonNode = getNode(city_name, country_code);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return jsonNode;
-    }
-
-    private JsonNode getNode(String city_name, String country_code) throws Exception {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String url_weather = getUrl(city_name, country_code);
-            String replacementUrl = url_weather.replace(" ", "%20");
-            URL url = new URL(replacementUrl);
-            JsonNode rootNode = objectMapper.readTree(url);
-            return rootNode.path(DATA).get(0);
     }
 
     private double calculateForWindsurfingLocation(WeatherResponseDto weather) {
