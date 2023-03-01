@@ -2,16 +2,17 @@ package com.github.windurferweather.weather;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static com.github.windurferweather.weather.LocationCreator.createLocations;
 import static com.github.windurferweather.weather.WeatherConstant.*;
 import static java.util.Comparator.comparingDouble;
 
@@ -25,11 +26,12 @@ class WeatherServiceImpl implements WeatherService {
         this.weatherClient = weatherClient;
     }
 
-
     @Override
     public WeatherResponseDto readWindsurfingLocation(String date) {
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate.parse(date, dateFormat);
+        DateTimeFormatter df = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendPattern("dd-MMM-yyyy")
+                .toFormatter(Locale.ENGLISH);
 
         Map<String, String> locations = createLocations();
 
@@ -51,6 +53,16 @@ class WeatherServiceImpl implements WeatherService {
                 .max(comparingDouble(this::calculateForWindsurfingLocation))
                 .map(location -> new WeatherResponseDto(location.getCity_name(), location.getCountry_code(), location.getWind_spd(), location.getTemp(), location.getDate()))
                 .orElse(null);
+    }
+
+    private Map<String, String> createLocations() {
+        return Map.of(
+                "Jastarnia", "PL",
+                "Bridgetown", "BB",
+                "Fortaleza", "BR",
+                "Pissouri", "CY",
+                "Le Mont", "CH"
+        );
     }
 
     private JsonNode getJsonNode(String city_name, String country_code) {
