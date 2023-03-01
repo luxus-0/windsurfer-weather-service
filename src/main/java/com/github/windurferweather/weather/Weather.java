@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Builder
 @AllArgsConstructor
-class ForecastWeather {
+class Weather {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +27,7 @@ class ForecastWeather {
     private String date;
     List<Object> data = new ArrayList<>();
 
-    public ForecastWeather() {
+    public Weather() {
     }
 
     public String getCity_name() {

@@ -1,6 +1,7 @@
 package com.github.windurferweather.weather;
 
 import com.github.windurferweather.config.ConfigurationClient;
+import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import org.springframework.stereotype.Service;
 
 import static com.github.windurferweather.weather.WeatherConstant.getUrl;
