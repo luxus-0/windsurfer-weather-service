@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Log4j2
-class WeatherForecastController {
+class WeatherController {
     private final WeatherServiceImpl weatherService;
-    WeatherForecastController(WeatherServiceImpl weatherService) {
+    WeatherController(WeatherServiceImpl weatherService) {
         this.weatherService = weatherService;
     }
 
