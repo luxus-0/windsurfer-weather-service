@@ -4,6 +4,8 @@ import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 
 class WeatherServiceImplTest {
     private final WeatherClient weatherClient = new WeatherClient();
@@ -34,12 +36,28 @@ class WeatherServiceImplTest {
     }
 
     @Test
-    public void shouldReturnIncorrectCountryCodeWhenUserGaveCountryCodeWithConcreteDate(){
+    public void shouldReturnCorrectLocationWhenUserGaveCountryCodeWithConcreteDate(){
 
         String date = "2023-01-03";
 
-        String country_code_excepted = weatherService.readTheBestLocationForWindsurfing(date).getCountry_code();
+        WeatherResponseDto weatherExpected = weatherService.readTheBestLocationForWindsurfing(date);
+        String city_excepted = weatherExpected.getCity_name();
+        String country_code_excepted = weatherExpected.getCountry_code();
 
-        Assertions.assertNotEquals(country_code_excepted, "ZZ");
+        Assertions.assertEquals(city_excepted, "Bridgetown");
+        Assertions.assertEquals(country_code_excepted, "BB");
+    }
+
+    @Test
+    public void shouldReturnCorrectLocationWhenUserGaveLocationWithDate(){
+
+        String date = LocalDateTime.now(Clock.systemUTC()).toString();
+
+        WeatherResponseDto weatherExpected = weatherService.readTheBestLocationForWindsurfing(date);
+        String cityExpected = weatherExpected.getCity_name();
+        String countryCodeExpected = weatherExpected.getCountry_code();
+
+        Assertions.assertEquals(cityExpected, "Bridgetown");
+        Assertions.assertEquals(countryCodeExpected, "BB");
     }
 }
