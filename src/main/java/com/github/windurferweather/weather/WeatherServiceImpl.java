@@ -19,9 +19,11 @@ import static java.util.Comparator.comparingDouble;
 @Service
 class WeatherServiceImpl implements WeatherService {
     private final WeatherClient weatherClient;
+    private final WeatherRepository weatherRepository;
 
-    WeatherServiceImpl(WeatherClient weatherClient) {
+    WeatherServiceImpl(WeatherClient weatherClient, WeatherRepository weatherRepository) {
         this.weatherClient = weatherClient;
+        this.weatherRepository = weatherRepository;
     }
 
     @Override
@@ -35,24 +37,48 @@ class WeatherServiceImpl implements WeatherService {
                     String city_name = weatherResponse.getCity_name();
                     String country_code = weatherResponse.getCountry_code();
 
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    String url_weather = getUrlWeather(date, city_name, country_code);
-                    String replacementUrl = url_weather.replace(" ", "%20");
-                    URL url = getUrl(replacementUrl);
-                    JsonNode data = getJsonNode(objectMapper, url);
+                    JsonNode jsonNode = mapToJson(date, city_name, country_code);
 
-                    double avgTemperature = getAvgTemperature(data);
-                    double avgWindSpeed = getAvgWindSpeed(data);
+                    double avgTemperature = getAvgTemperature(jsonNode);
+                    double avgWindSpeed = getAvgWindSpeed(jsonNode);
 
                     return new WeatherResponseDto(city_name, country_code, avgWindSpeed, avgTemperature, date);
                 })
                 .filter(this::isSuitableForWindsurfingWeather)
                 .max(comparingDouble(this::calculateForWindsurfingLocation))
-                .map(location -> new WeatherResponseDto(location.getCity_name(), location.getCountry_code(), location.getWind_spd(), location.getTemp(), location.getDate()))
+                .map(weather -> new WeatherResponseDto(weather.getCity_name(), weather.getCountry_code(), weather.getWind_spd(), weather.getTemp(), weather.getDate()))
                 .orElse(null);
     }
+    Weather createWeatherForBestLocalization(String date) {
+        WeatherResponseDto greatLocationForWindsurfing = readTheBestLocationForWindsurfing(date);
+        Weather weather = Weather.builder()
+                .cityName(greatLocationForWindsurfing.getCity_name())
+                .countryCode(greatLocationForWindsurfing.getCountry_code())
+                .temperature(greatLocationForWindsurfing.getTemp())
+                .windSpeed(greatLocationForWindsurfing.getWind_spd())
+                .build();
+        return weatherRepository.save(weather);
+    }
 
-    private String getUrlWeather(String date, String city_name, String country_code) {
+    private JsonNode mapToJson(String city_name, String country_code, String date) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String url_weather = getUrlWeather(city_name, country_code, date);
+        String replacementUrl = url_weather.replace(" ", "%20");
+        URL url = getUrl(replacementUrl);
+        return getJsonNode(objectMapper, url);
+    }
+
+    private JsonNode getJsonNode(ObjectMapper objectMapper, URL url) {
+        JsonNode rootNode;
+        try {
+            rootNode = objectMapper.readTree(url);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return rootNode.path(DATA).get(0);
+    }
+
+    private String getUrlWeather(String city_name, String country_code, String date) {
         return ENDPOINT + "?city=" + city_name + "&country=" + country_code + "&valid_date=" + date + "&key=" + API_KEY;
     }
 
@@ -64,16 +90,6 @@ class WeatherServiceImpl implements WeatherService {
             throw new RuntimeException(e);
         }
         return url;
-    }
-
-    private JsonNode getJsonNode(ObjectMapper objectMapper, URL url) {
-        JsonNode rootNode;
-        try {
-            rootNode = objectMapper.readTree(url);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return rootNode.path(DATA).get(0);
     }
 
     private Map<String, String> createLocations() {
@@ -90,9 +106,9 @@ class WeatherServiceImpl implements WeatherService {
         return weather.getWind_spd() * 3 + weather.getTemp();
     }
 
-    private boolean isSuitableForWindsurfingWeather(WeatherResponseDto locationData) {
-        return locationData.getWind_spd() >= MIN_WIND && locationData.getWind_spd() <= MAX_WIND
-                && locationData.getTemp() >= MIN_TEMP && locationData.getTemp() <= MAX_TEMP;
+    private boolean isSuitableForWindsurfingWeather(WeatherResponseDto weatherResponse) {
+        return weatherResponse.getWind_spd() >= MIN_WIND && weatherResponse.getWind_spd() <= MAX_WIND
+                && weatherResponse.getTemp() >= MIN_TEMP && weatherResponse.getTemp() <= MAX_TEMP;
     }
     private double getAvgTemperature(JsonNode dataNode) {
         return Stream.of(dataNode)
