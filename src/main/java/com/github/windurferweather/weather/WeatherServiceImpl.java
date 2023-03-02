@@ -76,7 +76,6 @@ class WeatherServiceImpl implements WeatherService {
         return rootNode.path(DATA).get(0);
     }
 
-
     private Map<String, String> createLocations() {
         return Map.of(
                 "Jastarnia", "PL",
