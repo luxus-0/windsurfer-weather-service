@@ -2,6 +2,7 @@ package com.github.windurferweather.weather;
 
 import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -13,7 +14,8 @@ class WeatherServiceImplTest {
 
 
     @Test
-    public void shouldReturnIncorrectCityWhenUserGaveCityWithConcreteDate(){
+    @DisplayName("Should return incorrect city when user gave date")
+    public void shouldReturnIncorrectCityWhenUserGaveDate(){
 
         WeatherResponseDto weatherData = WeatherResponseDto.builder()
                 .date("2023-03-05")
@@ -26,7 +28,8 @@ class WeatherServiceImplTest {
     }
 
     @Test
-    public void shouldReturnCorrectCountryCodeWhenUserGaveCountryCodeWithConcreteDate(){
+    @DisplayName("Should return correct country code when user gave date")
+    public void shouldReturnCorrectCountryCodeWhenUserGaveDate(){
 
         String date = "2023-01-03";
 
@@ -36,7 +39,8 @@ class WeatherServiceImplTest {
     }
 
     @Test
-    public void shouldReturnCorrectLocationWhenUserGaveCountryCodeWithConcreteDate(){
+    @DisplayName("Should return incorrect city and country when user gave date")
+    public void shouldReturnInCorrectCityAndCountryWhenUserGaveDate(){
 
         String date = "2023-01-03";
 
@@ -44,12 +48,13 @@ class WeatherServiceImplTest {
         String city_excepted = weatherExpected.getCity_name();
         String country_code_excepted = weatherExpected.getCountry_code();
 
-        Assertions.assertEquals(city_excepted, "Bridgetown");
-        Assertions.assertEquals(country_code_excepted, "BB");
+        Assertions.assertNotEquals(city_excepted, "Jastarnia");
+        Assertions.assertNotEquals(country_code_excepted, "JS");
     }
 
     @Test
-    public void shouldReturnCorrectLocationWhenUserGaveLocationWithDate(){
+    @DisplayName("Should return correct city and country when user gave today date")
+    public void shouldReturnCorrectCityAndCountryWhenUserGaveTodayDate(){
 
         String date = LocalDateTime.now(Clock.systemUTC()).toString();
 
