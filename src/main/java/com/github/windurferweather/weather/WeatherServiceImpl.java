@@ -18,7 +18,6 @@ import static java.util.Comparator.comparingDouble;
 @Log4j2
 @Service
 class WeatherServiceImpl implements WeatherService {
-
     private final WeatherClient weatherClient;
 
     WeatherServiceImpl(WeatherClient weatherClient) {
