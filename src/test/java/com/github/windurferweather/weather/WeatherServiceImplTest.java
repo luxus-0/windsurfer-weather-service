@@ -10,7 +10,13 @@ import java.time.LocalDateTime;
 
 class WeatherServiceImplTest {
     private final WeatherClient weatherClient = new WeatherClient();
-    private final WeatherServiceImpl weatherService = new WeatherServiceImpl(weatherClient);
+
+    private WeatherRepository weatherRepository;
+    private final WeatherServiceImpl weatherService = new WeatherServiceImpl(weatherClient, weatherRepository);
+
+    WeatherServiceImplTest(WeatherRepository weatherRepository) {
+        this.weatherRepository = weatherRepository;
+    }
 
 
     @Test
