@@ -35,17 +35,19 @@ class WeatherServiceImpl implements WeatherService {
         LocalDate date = LocalDate.parse(day, DateTimeFormatter.ISO_DATE);
 
         return locations.stream()
-                .map(weather -> {
-                    LocationDto location = getLocationDto(weather);
-                    try {
-                        return getWeatherResponseDto(date, location);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .map(weather -> getWeather(date, weather))
                 .filter(this::isSuitableForWindsurfingWeather)
                 .max(Comparator.comparingDouble(this::calculateForWindsurfingLocation))
                 .orElse(new WeatherResponseDto(new LocationDto("","",0,0),0, 0,""));
+    }
+
+    private WeatherResponseDto getWeather(LocalDate date, LocationDto location) {
+        LocationDto locationDto = getLocationDto(location);
+        try {
+            return getWeatherResponseDto(date, locationDto);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private WeatherResponseDto getWeatherResponseDto(LocalDate date, LocationDto location) throws IOException {
