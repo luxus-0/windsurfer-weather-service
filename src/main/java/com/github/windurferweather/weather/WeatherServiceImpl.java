@@ -57,7 +57,7 @@ class WeatherServiceImpl implements WeatherService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode root = objectMapper.readTree(response.getBody());
                 JsonNode data = root.get("data");
-                if (data != null && data.isArray() && data.size() > 0) {
+                if (data != null) {
                     JsonNode jsonNode = data.get(0);
                     double temperature = jsonNode.get("temp").asDouble();
                     double windSpeed = jsonNode.get("wind_spd").asDouble();
