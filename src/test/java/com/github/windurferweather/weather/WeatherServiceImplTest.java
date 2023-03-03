@@ -6,9 +6,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-
 class WeatherServiceImplTest {
     private final WeatherClient weatherClient = new WeatherClient();
     private final WeatherServiceImpl weatherService = new WeatherServiceImpl(weatherClient);
@@ -33,10 +30,10 @@ class WeatherServiceImplTest {
 
         String date = "2023-01-03";
 
-        String country_code_excepted = weatherService.readTheBestLocationForWindsurfing(date)
+        String countryExcepted = weatherService.readTheBestLocationForWindsurfing(date)
                 .getLocationDto().city();
 
-        Assertions.assertEquals(country_code_excepted, "BB");
+        Assertions.assertEquals(countryExcepted, "Bridgetown");
     }
 
     @Test
@@ -47,22 +44,22 @@ class WeatherServiceImplTest {
 
         WeatherResponseDto weatherExpected = weatherService.readTheBestLocationForWindsurfing(date);
         String cityExpected = weatherExpected.getLocationDto().city();
-        String countryCodeExpected = weatherExpected.getLocationDto().country();
+        String countryExpected = weatherExpected.getLocationDto().country();
         Assertions.assertNotEquals(cityExpected, "Jastarnia");
-        Assertions.assertNotEquals(countryCodeExpected, "JS");
+        Assertions.assertNotEquals(countryExpected, "JS");
     }
 
     @Test
     @DisplayName("Should return correct city and country when user gave today date")
     public void shouldReturnCorrectCityAndCountryWhenUserGaveTodayDate(){
 
-        String date = LocalDateTime.now(Clock.systemUTC()).toString();
+        String date = "2023-01-03";
 
         WeatherResponseDto weatherExpected = weatherService.readTheBestLocationForWindsurfing(date);
         String cityExpected = weatherExpected.getLocationDto().city();
-        String countryCodeExpected = weatherExpected.getLocationDto().country();
+        String countryExpected = weatherExpected.getLocationDto().country();
 
         Assertions.assertEquals(cityExpected, "Bridgetown");
-        Assertions.assertEquals(countryCodeExpected, "BB");
+        Assertions.assertEquals(countryExpected, "Barbados");
     }
 }
