@@ -1,105 +1,86 @@
 package com.github.windurferweather.weather;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.windurferweather.weather.dto.LocationDto;
 import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
-import java.util.stream.Stream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static com.github.windurferweather.weather.WeatherConstant.*;
-import static java.util.Comparator.comparingDouble;
 
 @Log4j2
 @Service
 class WeatherServiceImpl implements WeatherService {
     private final WeatherClient weatherClient;
-    private final WeatherRepository weatherRepository;
 
-    WeatherServiceImpl(WeatherClient weatherClient, WeatherRepository weatherRepository) {
+    WeatherServiceImpl(WeatherClient weatherClient) {
         this.weatherClient = weatherClient;
-        this.weatherRepository = weatherRepository;
     }
 
     @Override
-    public WeatherResponseDto readTheBestLocationForWindsurfing(String date) {
-        Map<String, String> locations = createLocations();
+    public WeatherResponseDto readTheBestLocationForWindsurfing(String day) {
+        List<LocationDto> locations = createLocation();
+        LocalDate date = LocalDate.parse(day, DateTimeFormatter.ISO_DATE);
 
-        return locations.entrySet().stream()
-                .map(location -> {
-                    WeatherResponseDto weatherResponse = weatherClient.getForecastWeather(location.getKey(), location.getValue(), date);
-
-                    String city_name = weatherResponse.getCity_name();
-                    String country_code = weatherResponse.getCountry_code();
-
-                    JsonNode jsonNode = mapToJson(date, city_name, country_code);
-
-                    double avgTemperature = getAvgTemperature(jsonNode);
-                    double avgWindSpeed = getAvgWindSpeed(jsonNode);
-
-                    return new WeatherResponseDto(city_name, country_code, avgWindSpeed, avgTemperature, date);
+        return locations.stream()
+                .map(weather -> {
+                    LocationDto location = getLocationDto(weather);
+                    try {
+                        return getWeatherResponseDto(date, location);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 })
                 .filter(this::isSuitableForWindsurfingWeather)
-                .max(comparingDouble(this::calculateForWindsurfingLocation))
-                .map(weather -> new WeatherResponseDto(weather.getCity_name(), weather.getCountry_code(), weather.getWind_spd(), weather.getTemp(), weather.getDate()))
-                .orElse(null);
-    }
-    Weather createWeatherForBestLocalization(String date) {
-        WeatherResponseDto greatLocationForWindsurfing = readTheBestLocationForWindsurfing(date);
-        Weather weather = Weather.builder()
-                .cityName(greatLocationForWindsurfing.getCity_name())
-                .countryCode(greatLocationForWindsurfing.getCountry_code())
-                .temperature(greatLocationForWindsurfing.getTemp())
-                .windSpeed(greatLocationForWindsurfing.getWind_spd())
-                .build();
-        return weatherRepository.save(weather);
+                .max(Comparator.comparingDouble(this::calculateForWindsurfingLocation))
+                .orElse(new WeatherResponseDto(new LocationDto("","",0,0),0, 0,""));
     }
 
-    private JsonNode mapToJson(String city_name, String country_code, String date) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String url_weather = getUrlWeather(city_name, country_code, date);
-        String replacementUrl = url_weather.replace(" ", "%20");
-        URL url = getUrl(replacementUrl);
-        return getJsonNode(objectMapper, url);
-    }
+    private WeatherResponseDto getWeatherResponseDto(LocalDate date, LocationDto location) throws IOException {
+        ResponseEntity<String> response = weatherClient.getForecastWeather(location);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode root = objectMapper.readTree(response.getBody());
+                JsonNode data = root.get("data");
+                if (data != null && data.isArray() && data.size() > 0) {
+                    JsonNode jsonNode = data.get(0);
+                    double temperature = jsonNode.get("temp").asDouble();
+                    double windSpeed = jsonNode.get("wind_spd").asDouble();
 
-    private JsonNode getJsonNode(ObjectMapper objectMapper, URL url) {
-        JsonNode rootNode;
-        try {
-            rootNode = objectMapper.readTree(url);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+                    return new WeatherResponseDto(location, windSpeed, temperature, date.toString());
+                }
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
         }
-        return rootNode.path(DATA).get(0);
+        return new WeatherResponseDto(location, 0, 0, date.toString());
     }
 
-    private String getUrlWeather(String city_name, String country_code, String date) {
-        return ENDPOINT + "?city=" + city_name + "&country=" + country_code + "&valid_date=" + date + "&key=" + API_KEY;
+    private LocationDto getLocationDto(LocationDto weather) {
+        return new LocationDto(weather.city(), weather.country(), weather.lat(), weather.lon());
     }
 
-    private URL getUrl(String replacementUrl) {
-        URL url;
-        try {
-            url = new URL(replacementUrl);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        return url;
-    }
-
-    private Map<String, String> createLocations() {
-        return Map.of(
-                "Jastarnia", "PL",
-                "Bridgetown", "BB",
-                "Fortaleza", "BR",
-                "Pissouri", "CY",
-                "Le Mont", "CH"
-        );
+    private List<LocationDto> createLocation() {
+        List<LocationDto> locations = new ArrayList<>();
+        locations.add(new LocationDto("Jastarnia", "Poland", 54.6971, 18.6804));
+        locations.add(new LocationDto("Bridgetown", "Barbados", 13.0969, -59.6145));
+        locations.add(new LocationDto("Fortaleza", "Brazil", -3.7184, -38.5434));
+        locations.add(new LocationDto("Pissouri", "Cyprus", 34.6704, 32.7084));
+        locations.add(new LocationDto("Le Morne", "Mauritius", -20.4019, 57.3142));
+        return locations;
     }
 
     private double calculateForWindsurfingLocation(WeatherResponseDto weather) {
@@ -109,18 +90,5 @@ class WeatherServiceImpl implements WeatherService {
     private boolean isSuitableForWindsurfingWeather(WeatherResponseDto weatherResponse) {
         return weatherResponse.getWind_spd() >= MIN_WIND && weatherResponse.getWind_spd() <= MAX_WIND
                 && weatherResponse.getTemp() >= MIN_TEMP && weatherResponse.getTemp() <= MAX_TEMP;
-    }
-    private double getAvgTemperature(JsonNode dataNode) {
-        return Stream.of(dataNode)
-                .mapToDouble(data -> data.get(TEMPERATURE).asDouble())
-                .average()
-                .orElse(Double.NaN);
-    }
-
-    private double getAvgWindSpeed(JsonNode dataNode) {
-        return Stream.of(dataNode)
-                .mapToDouble(data -> data.get(WIND_SPEED).asDouble())
-                .summaryStatistics()
-                .getAverage();
     }
 }
