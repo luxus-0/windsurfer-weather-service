@@ -13,8 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WeatherResponseDto {
-        private String city_name;
-        private String country_code;
+        private LocationDto locationDto;
         private double wind_spd;
         private double temp;
         private String date;
