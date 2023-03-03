@@ -7,13 +7,10 @@ import com.github.windurferweather.weather.dto.LocationDto;
 import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -35,7 +32,7 @@ class WeatherServiceImpl implements WeatherService {
         LocalDate date = LocalDate.parse(day, DateTimeFormatter.ISO_DATE);
 
         return locations.stream()
-                .map(weather -> getWeather(date, weather))
+                .map(location -> getWeather(date, location))
                 .filter(this::isSuitableForWindsurfingWeather)
                 .max(Comparator.comparingDouble(this::calculateForWindsurfingLocation))
                 .orElse(new WeatherResponseDto(new LocationDto("","",0,0),0, 0,""));
@@ -68,7 +65,7 @@ class WeatherServiceImpl implements WeatherService {
                 throw new RuntimeException(e);
             }
         }
-        return new WeatherResponseDto(location, 0, 0, date.toString());
+        throw new BestWindSurfingWeatherForLocationNotFound();
     }
 
     private LocationDto getLocationDto(LocationDto weather) {
