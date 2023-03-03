@@ -1,5 +1,6 @@
 package com.github.windurferweather.weather;
 
+import com.github.windurferweather.weather.dto.LocationDto;
 import com.github.windurferweather.weather.dto.WeatherResponseDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -10,14 +11,7 @@ import java.time.LocalDateTime;
 
 class WeatherServiceImplTest {
     private final WeatherClient weatherClient = new WeatherClient();
-
-    private WeatherRepository weatherRepository;
-    private final WeatherServiceImpl weatherService = new WeatherServiceImpl(weatherClient, weatherRepository);
-
-    WeatherServiceImplTest(WeatherRepository weatherRepository) {
-        this.weatherRepository = weatherRepository;
-    }
-
+    private final WeatherServiceImpl weatherService = new WeatherServiceImpl(weatherClient);
 
     @Test
     @DisplayName("Should return incorrect city when user gave date")
@@ -25,12 +19,12 @@ class WeatherServiceImplTest {
 
         WeatherResponseDto weatherData = WeatherResponseDto.builder()
                 .date("2023-03-05")
-                .city_name("Warsaw")
+                .locationDto(new LocationDto("Warsaw","",0,0))
                 .build();
 
         WeatherResponseDto weatherExcepted = weatherService.readTheBestLocationForWindsurfing(weatherData.getDate());
 
-        Assertions.assertNotEquals(weatherExcepted.getCity_name(), "Fortaleza");
+        Assertions.assertNotEquals(weatherExcepted.getLocationDto().city(), "Fortaleza");
     }
 
     @Test
@@ -39,7 +33,8 @@ class WeatherServiceImplTest {
 
         String date = "2023-01-03";
 
-        String country_code_excepted = weatherService.readTheBestLocationForWindsurfing(date).getCountry_code();
+        String country_code_excepted = weatherService.readTheBestLocationForWindsurfing(date)
+                .getLocationDto().city();
 
         Assertions.assertEquals(country_code_excepted, "BB");
     }
@@ -51,11 +46,10 @@ class WeatherServiceImplTest {
         String date = "2023-01-03";
 
         WeatherResponseDto weatherExpected = weatherService.readTheBestLocationForWindsurfing(date);
-        String city_excepted = weatherExpected.getCity_name();
-        String country_code_excepted = weatherExpected.getCountry_code();
-
-        Assertions.assertNotEquals(city_excepted, "Jastarnia");
-        Assertions.assertNotEquals(country_code_excepted, "JS");
+        String cityExpected = weatherExpected.getLocationDto().city();
+        String countryCodeExpected = weatherExpected.getLocationDto().country();
+        Assertions.assertNotEquals(cityExpected, "Jastarnia");
+        Assertions.assertNotEquals(countryCodeExpected, "JS");
     }
 
     @Test
@@ -65,8 +59,8 @@ class WeatherServiceImplTest {
         String date = LocalDateTime.now(Clock.systemUTC()).toString();
 
         WeatherResponseDto weatherExpected = weatherService.readTheBestLocationForWindsurfing(date);
-        String cityExpected = weatherExpected.getCity_name();
-        String countryCodeExpected = weatherExpected.getCountry_code();
+        String cityExpected = weatherExpected.getLocationDto().city();
+        String countryCodeExpected = weatherExpected.getLocationDto().country();
 
         Assertions.assertEquals(cityExpected, "Bridgetown");
         Assertions.assertEquals(countryCodeExpected, "BB");
