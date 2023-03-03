@@ -16,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.github.windurferweather.weather.WeatherConstant.*;
+import static java.util.Comparator.comparingDouble;
 
 @Log4j2
 @Service
@@ -34,7 +35,7 @@ class WeatherServiceImpl implements WeatherService {
         return locations.stream()
                 .map(location -> getWeather(date, location))
                 .filter(this::isSuitableForWindsurfingWeather)
-                .max(Comparator.comparingDouble(this::calculateForWindsurfingLocation))
+                .max(comparingDouble(this::calculateForWindsurfingLocation))
                 .orElse(new WeatherResponseDto(new LocationDto("","",0,0),0, 0,""));
     }
 
