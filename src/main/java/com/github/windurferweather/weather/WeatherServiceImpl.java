@@ -65,7 +65,7 @@ class WeatherServiceImpl implements WeatherService {
                 throw new RuntimeException(e);
             }
         }
-        throw new BestWindSurfingWeatherForLocationNotFound();
+        return new WeatherResponseDto(location, 0, 0, date.toString());
     }
 
     private LocationDto getLocationDto(LocationDto weather) {
