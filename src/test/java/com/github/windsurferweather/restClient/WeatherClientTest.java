@@ -11,6 +11,8 @@ import java.time.temporal.TemporalUnit;
 
 import static com.github.windsurferweather.utils.Tools.getToday;
 import static java.time.LocalDate.now;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class WeatherClientTest {
@@ -59,5 +61,18 @@ class WeatherClientTest {
         Assertions.assertThat(forecastWeather).isNotNull();
         Assertions.assertThat(forecastWeather.getCityName()).isNotEqualTo("Fortaleza");
         Assertions.assertThat(forecastWeather.getCountryCode()).isNotEqualTo("BR");
+    }
+
+    @Test
+    void shouldReturnForecastWeatherWhenCityAndCountryIsCorrect(){
+
+        Weather forecastWeather = weatherClient.getForecastWeather("Warsaw", "PL", getToday());
+
+        Assertions.assertThat(forecastWeather).isNotNull();
+        Assertions.assertThat(forecastWeather.getCityName())
+                .isNotEqualTo("Fortaleza")
+                .isNotEqualTo("Bridgetown")
+                .isNotEqualTo("Pissouri")
+                .isNotEqualTo("Le Mont");
     }
 }
