@@ -4,6 +4,8 @@ import com.github.windsurferweather.model.Weather;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -11,8 +13,7 @@ import java.time.temporal.TemporalUnit;
 
 import static com.github.windsurferweather.utils.Tools.getToday;
 import static java.time.LocalDate.now;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class WeatherClientTest {
@@ -74,5 +75,15 @@ class WeatherClientTest {
                 .isNotEqualTo("Bridgetown")
                 .isNotEqualTo("Pissouri")
                 .isNotEqualTo("Le Mont");
+    }
+
+    @Test
+    void shouldThrowBadRequestWhenCityAndCountryIsIncorrect(){
+        String city = "";
+        String country = "";
+
+
+        assertThrows(HttpClientErrorException.BadRequest.class,
+                ()->  weatherClient.getForecastWeather(city,country, getToday()));
     }
 }
