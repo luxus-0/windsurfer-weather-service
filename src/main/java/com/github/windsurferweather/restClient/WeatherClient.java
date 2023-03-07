@@ -8,8 +8,7 @@ import static com.github.windsurferweather.utils.WeatherConstant.API_KEY;
 import static com.github.windsurferweather.utils.WeatherConstant.API_URL;
 
 @Service
-public
-class WeatherClient {
+public class WeatherClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
