@@ -1,24 +1,36 @@
 package com.github.windsurferweather.restClient;
 
 import com.github.windsurferweather.model.Weather;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 
 import static com.github.windsurferweather.utils.Tools.getToday;
+import static com.github.windsurferweather.utils.WeatherConstant.API_KEY;
+import static com.github.windsurferweather.utils.WeatherConstant.API_URL;
 import static java.time.LocalDate.now;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class WeatherClientTest {
 
-   private final WeatherClient weatherClient = new WeatherClient();
+    @Autowired
+    private WeatherClient weatherClient;
+    @Mock
+    private RestTemplate restTemplate;
+
+    WeatherClientTest() {
+    }
 
     @Test
     void shouldReturnForecastWeather(){
@@ -27,31 +39,31 @@ class WeatherClientTest {
 
         Weather forecastWeather = weatherClient.getForecastWeather(city, country, getToday());
 
-        Assertions.assertThat(forecastWeather).isNotNull();
+        assertThat(forecastWeather).isNotNull();
     }
 
     @Test
-    void shouldReturnForecastWeatherWhenIncorrectDate(){
+    void shouldReturnForecastWeatherWhenIsIncorrectDate() {
         String city = "Bridgetown";
         String country = "BB";
         String today = now().minus(2, ChronoUnit.DAYS).toString();
 
         Weather forecastWeather = weatherClient.getForecastWeather(city, country, today);
 
-        Assertions.assertThat(forecastWeather).isNotNull();
-        Assertions.assertThat(today).isNotEqualTo(getToday());
+        assertThat(forecastWeather).isNotNull();
+        assertThat(today).isNotEqualTo(getToday());
     }
 
     @Test
-    void shouldReturnForecastWeatherWhenCorrectDate(){
+    void shouldReturnForecastWeatherWhenIsCorrectDate() {
         String city = "Bridgetown";
         String country = "BB";
         String today = String.valueOf(LocalDate.now());
 
         Weather forecastWeather = weatherClient.getForecastWeather(city, country, today);
 
-        Assertions.assertThat(forecastWeather).isNotNull();
-        Assertions.assertThat(today).isEqualTo(getToday());
+        assertThat(forecastWeather).isNotNull();
+        assertThat(today).isEqualTo(getToday());
     }
 
     @Test
@@ -59,9 +71,9 @@ class WeatherClientTest {
 
         Weather forecastWeather = weatherClient.getForecastWeather("Warsaw", "PL", getToday());
 
-        Assertions.assertThat(forecastWeather).isNotNull();
-        Assertions.assertThat(forecastWeather.getCityName()).isNotEqualTo("Fortaleza");
-        Assertions.assertThat(forecastWeather.getCountryCode()).isNotEqualTo("BR");
+        assertThat(forecastWeather).isNotNull();
+        assertThat(forecastWeather.getCityName()).isNotEqualTo("Fortaleza");
+        assertThat(forecastWeather.getCountryCode()).isNotEqualTo("BR");
     }
 
     @Test
@@ -69,8 +81,8 @@ class WeatherClientTest {
 
         Weather forecastWeather = weatherClient.getForecastWeather("Warsaw", "PL", getToday());
 
-        Assertions.assertThat(forecastWeather).isNotNull();
-        Assertions.assertThat(forecastWeather.getCityName())
+        assertThat(forecastWeather).isNotNull();
+        assertThat(forecastWeather.getCityName())
                 .isNotEqualTo("Fortaleza")
                 .isNotEqualTo("Bridgetown")
                 .isNotEqualTo("Pissouri")
@@ -78,12 +90,58 @@ class WeatherClientTest {
     }
 
     @Test
-    void shouldThrowBadRequestWhenCityAndCountryIsIncorrect(){
+    void shouldReturnOKWhenCityAndCountryAndDateIsCorrect() {
+        String city = "Jastarnia";
+        String country = "PL";
+        String date = getToday();
+        String url = String.format(API_URL, city, country, date, API_KEY);
+
+        Weather weather = new Weather();
+        weather.setCityName(city);
+        weather.setCountryCode(country);
+
+        when(restTemplate.getForEntity(url, Weather.class))
+                .thenReturn(new ResponseEntity<>(weather, HttpStatus.OK));
+
+        Weather result = weatherClient.getForecastWeather(city, country, date);
+
+        assertEquals(weather.getCityName(), result.getCityName());
+        assertEquals(weather.getCountryCode(), result.getCountryCode());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenCityAndCountryIsIncorrect() {
+
+        String city = "Warsaw";
+        String country = "PL";
+        String date = "2023-03-07";
+        String url = String.format(API_URL, city, country, date, API_KEY);
+
+        when(restTemplate.getForObject(url, Weather.class))
+                .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid Parameters supplied."));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenCityAndCountryIsEmpty() {
+
         String city = "";
         String country = "";
+        String date = "2023-03-07";
+        String url = String.format(API_URL, city, country, date, API_KEY);
 
+        when(restTemplate.getForObject(url, Weather.class))
+                .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid Parameters supplied."));
+    }
 
-        assertThrows(HttpClientErrorException.BadRequest.class,
-                ()->  weatherClient.getForecastWeather(city,country, getToday()));
+    @Test
+    void shouldReturnBadRequestWhenInvalidDate() {
+
+        String city = "Barbados";
+        String country = "Brasil";
+        String date = "";
+        String url = String.format(API_URL, city, country, date, API_KEY);
+
+        when(restTemplate.getForObject(url, Weather.class))
+                .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Invalid Parameters supplied."));
     }
 }
