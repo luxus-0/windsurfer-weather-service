@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.github.windsurferweather.utils.WeatherConstant.DATE_MESSAGE;
 import static com.github.windsurferweather.utils.WeatherConstant.DATE_REGEX;
 
 @RestController
@@ -22,7 +23,7 @@ public class WeatherController {
     @GetMapping("/{date}")
     public ResponseEntity<?> getWeather(@PathVariable String date) {
         if (!date.matches(DATE_REGEX))
-            return new ResponseEntity<>("Niepoprawna data, proszę o datę w formacie yyyy-MM-dd", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(DATE_MESSAGE, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(service.collectBestPlaceToSurfForEachDay(date), HttpStatus.OK);
     }
 }
