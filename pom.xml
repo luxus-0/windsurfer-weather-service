@@ -12,7 +12,7 @@
 	<artifactId>windurfer-weather</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>windsurfer-weather</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Windsurfer Weather Application</description>
 	<properties>
 		<java.version>19</java.version>
 	</properties>
