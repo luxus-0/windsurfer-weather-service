@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static com.github.windsurferweather.utils.Tools.getToday;
 import static com.github.windsurferweather.utils.WeatherConstant.API_KEY;
@@ -149,7 +150,7 @@ class WeatherServiceTest {
     }
 
     @Test
-    void shouldReturnIncorrectWindSpeedWhenGiveLocalizationAndDate() {
+    void shouldReturnIncorrectWindSpeedWhenGiveLocationAndDate() {
 
         String date = "2023-03-10";
         String city = "Bridgetown";
@@ -169,6 +170,88 @@ class WeatherServiceTest {
         assertThat(actualWeather).isNotNull();
         assertThat(expectedWeather).isNotNull();
         assertThat(actualWindSpeed).isNotEqualTo(expectedWindSpeed);
+    }
+
+    @Test
+    void shouldReturnIncorrectMinAndMaxTemperatureWhenGiveLocationAndDate() {
+
+        String date = "2023-03-10";
+        String city = "Jastarnia";
+        String country = "Poland";
+        String lat = "13.0969";
+        String lon = "59.6145";
+
+        Data expectedData = new Data(35.0, 25.0, 10.4, date);
+
+        Weather expectedWeather = new Weather(city, country, lat, lon, List.of(expectedData));
+
+        Weather actualWeather = weatherClient.getForecastWeather(city, country, date);
+
+        double actualMinimumTemperature = getActualMinTemperature(actualWeather);
+        double actualMaximumTemperature = getActualMaxTemperature(actualWeather);
+
+        double expectedMinimumTemperature = getExpectedMinTemperature(expectedWeather);
+        double expectedMaximumTemperature = getExpectedMaxTemperature(expectedWeather);
+
+        assertThat(actualWeather).isNotNull();
+        assertThat(expectedWeather).isNotNull();
+        assertThat(expectedData).isNotNull();
+        assertThat(actualMinimumTemperature).isNotEqualTo(expectedMinimumTemperature);
+        assertThat(actualMaximumTemperature).isNotEqualTo(expectedMaximumTemperature);
+    }
+
+    @Test
+    void shouldReturnCorrectMinAndMaxTemperatureWhenGiveLocationAndDate() {
+
+        String date = "2023-02-17";
+        String city = "Fortaleza";
+        String country = "Brazil";
+        String lat = "-3.7319";
+        String lon = " -38.5267";
+
+        Data expectedData = new Data(35.0, 20.0, 15, date);
+
+        Weather expectedWeather = new Weather(city, country, lat, lon, List.of(expectedData));
+
+        Weather actualWeather = weatherClient.getForecastWeather(city, country, date);
+
+        double actualMinimumTemperature = getActualMinTemperature(actualWeather);
+        double actualMaximumTemperature = getActualMaxTemperature(actualWeather);
+
+        assertThat(actualWeather).isNotNull();
+        assertThat(expectedWeather).isNotNull();
+        assertThat(expectedData).isNotNull();
+        assertThat(actualMinimumTemperature).isEqualTo(24.7);
+        assertThat(actualMaximumTemperature).isEqualTo(27.7);
+    }
+
+    private double getExpectedMaxTemperature(Weather expectedWeather) {
+        return Stream.of(expectedWeather)
+                .map(Weather::getData)
+                .flatMap(List::stream)
+                .findAny()
+                .map(Data::getMaxTemperature)
+                .orElse(0d);
+    }
+
+    private double getExpectedMinTemperature(Weather expectedWeather) {
+        return expectedWeather.getData().stream()
+                .map(Data::getMinTemperature).findAny()
+                .orElseThrow();
+    }
+
+    private double getActualMaxTemperature(Weather actualWeather) {
+        return actualWeather.getData().stream()
+                .mapToDouble(Data::getMaxTemperature)
+                .findAny()
+                .orElse(-111111);
+    }
+
+    private double getActualMinTemperature(Weather actualWeather) {
+        return actualWeather.getData().stream()
+                .mapToDouble(Data::getMinTemperature)
+                .iterator()
+                .next();
     }
 
     private static double getExpectedWindSpeed(Weather expectedWeather) {
