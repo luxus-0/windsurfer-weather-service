@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import static com.github.windsurferweather.utils.Tools.getToday;
 import static com.github.windsurferweather.utils.WeatherConstant.API_KEY;
 import static com.github.windsurferweather.utils.WeatherConstant.API_URL;
+import static com.github.windsurferweather.utils.WeatherConstantUnitTest.*;
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -224,47 +225,4 @@ class WeatherServiceTest {
         assertThat(actualMinimumTemperature).isEqualTo(24.7);
         assertThat(actualMaximumTemperature).isEqualTo(27.7);
     }
-
-    private double getExpectedMaxTemperature(Weather expectedWeather) {
-        return Stream.of(expectedWeather)
-                .map(Weather::getData)
-                .flatMap(List::stream)
-                .findAny()
-                .map(Data::getMaxTemperature)
-                .orElse(0d);
-    }
-
-    private double getExpectedMinTemperature(Weather expectedWeather) {
-        return expectedWeather.getData().stream()
-                .map(Data::getMinTemperature).findAny()
-                .orElseThrow();
-    }
-
-    private double getActualMaxTemperature(Weather actualWeather) {
-        return actualWeather.getData().stream()
-                .mapToDouble(Data::getMaxTemperature)
-                .findAny()
-                .orElse(-111111);
-    }
-
-    private double getActualMinTemperature(Weather actualWeather) {
-        return actualWeather.getData().stream()
-                .mapToDouble(Data::getMinTemperature)
-                .iterator()
-                .next();
-    }
-
-    private static double getExpectedWindSpeed(Weather expectedWeather) {
-        return expectedWeather.getData().stream()
-                .mapToDouble(Data::getWindSpeed)
-                .findAny()
-                .orElse(0d);
-    }
-
-    private static Double getActualWindSpeed(Weather actualWeather) {
-        return actualWeather.getData().stream()
-                .map(Data::getWindSpeed).findAny()
-                .orElse(0d);
-    }
-
 }
