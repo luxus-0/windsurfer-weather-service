@@ -78,7 +78,7 @@ git clone https://github.com/luxus-0/windsurfer-weather-service.git</b>
 lub
 mvn spring-boot:run</b>
 
-<b>Aplikacja powinna teraz uruchomić się lokalnie na porcie 8081.</b>
+<b>Aplikacja powinna teraz uruchomić się lokalnie na porcie 8081.</b><br>
 <b>4.Otwórz przeglądarkę i przejdź do adresu http://localhost:8081/swagger-ui.html, aby wyświetlić dokumentację interfejsu API REST.<br><br><br>
                                                            
                                                         
