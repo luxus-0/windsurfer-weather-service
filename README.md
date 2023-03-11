@@ -68,29 +68,29 @@ Aplikacja jest napisana w języku Java i wykorzystuje framework Spring Boot.<br>
 Aby uruchomić aplikację, należy postępować zgodnie z poniższymi krokami:
 
 
-<b>1. Pobierz i zainstaluj Java 8 lub wyższą wersję oraz Gradle lub Maven.<br><br><br>
+<b>1.Pobierz i zainstaluj Java 8 lub wyższą wersję oraz Gradle lub Maven.<br><br><br>
 
 
-<b>2. Pobierz repozytorium z GitHub:
-git clone https://github.com/twoj-login/weather-app.git</b>
+<b>2.Pobierz repozytorium z GitHub:
+git clone https://github.com/luxus-0/windsurfer-weather-service.git</b>
 
 
-<b>3. Otwórz terminal w katalogu głównym aplikacji i wykonaj polecenie:
+<b>3.Otwórz terminal w katalogu głównym aplikacji i wykonaj polecenie:
 ./gradlew bootRun
 lub
 mvn spring-boot:run</b>
 
-Aplikacja powinna teraz uruchomić się lokalnie na porcie 8080.
+Aplikacja powinna teraz uruchomić się lokalnie na porcie 8081.
 
 
-<b>4. Otwórz przeglądarkę i przejdź do adresu http://localhost:8080/swagger-ui.html, aby wyświetlić dokumentację interfejsu API REST.<br><br><br>
+<b>4.Otwórz przeglądarkę i przejdź do adresu http://localhost:8081/swagger-ui.html, aby wyświetlić dokumentację interfejsu API REST.<br><br><br>
                                                            
                                                         
 
                                                     Rozszerzanie listy lokalizacji
                                                     
 
-Lista lokalizacji windsurfingowych jest zdefiniowana w pliku src/main/resources/best_weather_for_windsurfing.json. Możesz edytować ten plik, aby dodać lub usunąć poszczególne parametry.
+Lista lokalizacji windsurfingowych jest zdefiniowana w pliku src/main/resources/BestWeatherForWindsurfing.json. Możesz edytować ten plik, aby dodać lub usunąć poszczególne parametry.
 Oczywiście można też postawić bazę danych np: PostgreSQL lub MongoDb i postawić dockera.<br><br><br>
 
 
@@ -213,6 +213,6 @@ Oczywiście można też postawić bazę danych np: PostgreSQL lub MongoDb i post
   }
 ]
 <br><br>
-                                                                          Autor: Łukasz Nowogórski
-                                                                          Facebook: https://www.facebook.com/profile.php?id=100000975680046
-                                                                          emailL: nowogorski.lukasz0@gmail.com<b>
+                                                                          Autor: Łukasz Nowogórski<br>
+                                                                          Facebook: https://www.facebook.com/profile.php?id=100000975680046<br>
+                                                                          emailL: nowogorski.lukasz0@gmail.com<br>
