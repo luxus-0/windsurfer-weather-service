@@ -51,8 +51,7 @@ date, city, max_temp, min_temp, wind_spd.<br><br><br>
 Aplikacja określa najlepszą lokalizację windsurfingową na podstawie dwóch kryteriów: prędkości wiatru i temperatury dla danego dnia.
 Jeśli prędkość wiatru nie mieści się w przedziale <5;18>(m/s), a temperatura nie mieści się w przedziale <5;35>(st.C), lokalizacja nie nadaje się do uprawiania windsurfingu.
 Jeśli prędkość wiatru i temperatura mieszczą się w powyższych przedziałach, aplikacja oblicza wartość zgodnie z następującym wzorem: v * 3 + temp
-gdzie v to prędkość wiatru w m/s dla danego dnia, a temp to średnia prognozowana temperatura na dany dzień w stopniach Celsjusza. 
-Aplikacja zwraca nazwę lokalizacji z najwyższą wartością.<br><br><br>
+gdzie v to prędkość wiatru w m/s dla danego dnia, a temp to średnia prognozowana temperatura na dany dzień w stopniach Celsjusza. Aplikacja zwraca nazwę lokalizacji z najwyższą wartością.<br><br><br>
 
 
                                                   Technologie
@@ -62,32 +61,29 @@ Aplikacja jest napisana w języku Java i wykorzystuje framework Spring Boot.<br>
 
 
 
-                                    Budowanie i Uruchamianie aplikacji
+                                                    Budowanie i Uruchamianie aplikacji
                                     
 
 Aby uruchomić aplikację, należy postępować zgodnie z poniższymi krokami:
 
 
-<b>1.Pobierz i zainstaluj Java 8 lub wyższą wersję oraz Gradle lub Maven.<br><br><br>
-
+<b>1.Pobierz i zainstaluj Java 8 lub wyższą wersję oraz Gradle lub Maven.</b>
 
 <b>2.Pobierz repozytorium z GitHub:
 git clone https://github.com/luxus-0/windsurfer-weather-service.git</b>
 
 
-<b>3.Otwórz terminal w katalogu głównym aplikacji i wykonaj polecenie:
+<b>3.Otwórz terminal w katalogu głównym aplikacji i wykonaj polecenie:<br>
 ./gradlew bootRun
 lub
 mvn spring-boot:run</b>
 
 Aplikacja powinna teraz uruchomić się lokalnie na porcie 8081.
-
-
 <b>4.Otwórz przeglądarkę i przejdź do adresu http://localhost:8081/swagger-ui.html, aby wyświetlić dokumentację interfejsu API REST.<br><br><br>
                                                            
                                                         
 
-                                                    Rozszerzanie listy lokalizacji
+                                                       Rozszerzanie listy lokalizacji
                                                     
 
 Lista lokalizacji windsurfingowych jest zdefiniowana w pliku src/main/resources/BestWeatherForWindsurfing.json. Możesz edytować ten plik, aby dodać lub usunąć poszczególne parametry.
