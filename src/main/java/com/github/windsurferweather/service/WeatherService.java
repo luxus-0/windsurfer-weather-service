@@ -23,7 +23,7 @@ public class WeatherService {
         this.weatherClient = weatherClient;
     }
 
-    protected List<Weather> getWeatherForAllCountries(String date) {
+    public List<Weather> getWeatherForAllCountries(String date) {
         return createLocations().entrySet().stream()
                 .map(location -> weatherClient.getForecastWeather(location.getKey(), location.getValue(), date)).toList();
     }
@@ -46,7 +46,10 @@ public class WeatherService {
     }
 
     private BestWeather pickUpBestWeather(Map<Double, BestWeather> weatherMap) {
-        Double max = weatherMap.keySet().stream().mapToDouble(Double::doubleValue).max().orElseThrow();
+        Double max = weatherMap.keySet().stream()
+                .mapToDouble(Double::doubleValue)
+                .max()
+                .orElseThrow();
         return weatherMap.get(max);
     }
 
