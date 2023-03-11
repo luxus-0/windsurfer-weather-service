@@ -91,7 +91,7 @@ Oczywiście można też postawić bazę danych np: PostgreSQL lub MongoDb i post
 
 
                                                   
-                                                    Format pliku BestWeatherForWindsurfing.json:<br><br><br>
+                                                    Format pliku BestWeatherForWindsurfing.json
 
 
   ![image](https://user-images.githubusercontent.com/74199705/224487070-932395c9-b52c-4f7b-9f02-f8ac9ee68036.png)
