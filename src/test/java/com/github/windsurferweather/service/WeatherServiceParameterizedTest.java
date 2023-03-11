@@ -11,12 +11,22 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Optional;
+
+import static com.github.windsurferweather.utils.WeatherConstantUnitTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class WeatherServiceParameterizedTest {
     @Autowired
     private WeatherClient weatherClient;
+
+    @Autowired
+    private WeatherService weatherService;
 
     @ParameterizedTest
     @CsvSource({
@@ -43,24 +53,24 @@ public class WeatherServiceParameterizedTest {
          assertThat(actualWindSpeed).isNotEqualTo(expectedWindSpeed);
     }
 
-    private static Double getActualWindSpeed(Weather actualWeather) {
-        return actualWeather.getData().stream()
-                .map(Data::getWindSpeed)
-                .findAny()
-                .orElse(0d);
-    }
+    @ParameterizedTest
+    @CsvSource({"2023-03-13, 7.0, 10.0, 0.0",
+                "2023-03-15, 12.0, 9.0, 0.0",
+                "2023-03-17, 16.0, 4.0, 0.0",
+                "2023-03-19, 10.0, 21.0, 0.0"
+    })
+    void shouldReturnFalseWhenTempAndWindSpeedIsZeroOrNotCorrect(String expectedDate, double expectedMinTemp, double expectedMaxTemp, double expectedWindSpeed){
 
-    private static Double getActualMaxTemperature(Weather actualWeather) {
-        return actualWeather.getData().stream()
-                .map(Data::getMaxTemperature)
-                .findAny()
-                .orElseThrow();
-    }
+        List<Weather> actualWeather = weatherService.getWeatherForAllCountries(expectedDate);
 
-    private static Double getActualMinTemperature(Weather actualWeather) {
-        return actualWeather.getData().stream()
-                .map(Data::getMinTemperature)
-                .findAny()
-                .orElse(-1111d);
+        double windSpeed = readWindSpeed(actualWeather);
+        double minTemp = readMinTemperature(actualWeather);
+        double maxTemp = readMaxTemperature(actualWeather);
+
+        assertThat(actualWeather).isNotNull();
+        assertNotEquals(minTemp, expectedMinTemp);
+        assertNotEquals(maxTemp, expectedMaxTemp);
+        assertNotEquals(windSpeed, expectedWindSpeed);
+        assertEquals(0, expectedWindSpeed);
     }
 }
