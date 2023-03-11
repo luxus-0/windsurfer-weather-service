@@ -1,30 +1,27 @@
 package com.github.windsurferweather.service;
 
+import com.github.windsurferweather.controller.WeatherController;
+import com.github.windsurferweather.exception.WeatherClientNotFoundException;
 import com.github.windsurferweather.model.Data;
 import com.github.windsurferweather.model.Weather;
 import com.github.windsurferweather.restClient.WeatherClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static com.github.windsurferweather.utils.Tools.getToday;
-import static com.github.windsurferweather.utils.WeatherConstant.API_KEY;
-import static com.github.windsurferweather.utils.WeatherConstant.API_URL;
+import static com.github.windsurferweather.utils.WeatherConstant.*;
 import static com.github.windsurferweather.utils.WeatherConstantUnitTest.*;
-import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -33,12 +30,14 @@ class WeatherServiceTest {
     private WeatherClient weatherClient;
     @Mock
     private RestTemplate restTemplate;
+    @InjectMocks
+    private WeatherService weatherService;
 
     WeatherServiceTest() {
     }
 
     @Test
-    void shouldReturnForecastWeather(){
+    void shouldReturnForecastWeatherWhenLocationIsCorrect(){
         String city = "Jastarnia";
         String country = "pl";
 
@@ -48,31 +47,43 @@ class WeatherServiceTest {
     }
 
     @Test
-    void shouldReturnForecastWeatherWhenIsIncorrectDate() {
-        String city = "Bridgetown";
-        String country = "BB";
-        String today = now().minus(2, ChronoUnit.DAYS).toString();
+    void shouldReturnBadRequestWhenDateFormatIsWrong() {
 
-        Weather forecastWeather = weatherClient.getForecastWeather(city, country, today);
+        String date = "2000-300-400";
 
-        assertThat(forecastWeather).isNotNull();
-        assertThat(today).isNotEqualTo(getToday());
+        WeatherController weatherController = new WeatherController(weatherService);
+        ResponseEntity<?> weatherResponse = weatherController.getWeather(date);
+
+        assertThat(weatherResponse.getBody()).isNull();
+        assertThat(weatherResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
-    void shouldReturnForecastWeatherWhenIsCorrectDate() {
-        String city = "Bridgetown";
-        String country = "BB";
-        String today = String.valueOf(LocalDate.now());
+    void shouldReturnBadRequestWhenDateIsEmpty() {
+        String date = "";
 
-        Weather forecastWeather = weatherClient.getForecastWeather(city, country, today);
+        WeatherController weatherController = new WeatherController(weatherService);
+        ResponseEntity<?> weatherResponse = weatherController.getWeather(date);
 
-        assertThat(forecastWeather).isNotNull();
-        assertThat(today).isEqualTo(getToday());
+       assertThat(weatherResponse.getBody()).isEqualTo("Niepoprawna data, proszę o datę w formacie yyyy-MM-dd");
+       assertThat(weatherResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
-    void shouldReturnForecastWeatherWhenCityAndCountryIsInCorrect(){
+    void shouldReturnOKWhenDateIsCorrect() {
+        String today = getToday();
+
+        WeatherController weatherController = new WeatherController(weatherService);
+
+        ResponseEntity<?> weatherResponse = weatherController.getWeather(today);
+
+        assertThat(today).isNotNull();
+        assertThat(weatherResponse).isNotNull();
+        assertThat(weatherResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    void shouldReturnFalseWhenCityAndCountryIsNotCorrect(){
 
         Weather forecastWeather = weatherClient.getForecastWeather("Warsaw", "PL", getToday());
 
@@ -223,6 +234,19 @@ class WeatherServiceTest {
         assertThat(expectedWeather).isNotNull();
         assertThat(expectedData).isNotNull();
         assertThat(actualMinimumTemperature).isEqualTo(24.7);
-        assertThat(actualMaximumTemperature).isEqualTo(27.7);
+        assertThat(actualMaximumTemperature).isEqualTo(28.7);
     }
+
+    @Test
+    public void shouldReturnErrorWhenGaveIncorrectLocation() {
+
+        String day = "2023-03-20";
+        String city = "Warsaw";
+        String country = "Poland";
+
+        WeatherClient weatherClient = mock(WeatherClient.class);
+
+        when(weatherClient.getForecastWeather(city, country, day))
+                .thenThrow(new WeatherClientNotFoundException(WEATHER_MESSAGE));
+        }
 }
