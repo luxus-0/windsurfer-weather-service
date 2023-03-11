@@ -21,7 +21,7 @@ Jeśli będzie zły format to pojawi się komunikat:<br><br>
 
                                             PRZYKŁAD ENDPOINT API
                                             
-http://localhost:8081/api/v1/surfing-places/2023-03-11<br><br><br>
+http://localhost:8080/api/v1/surfing-places/2023-03-11<br><br><br>
 
                                                     JSON
                                                     
