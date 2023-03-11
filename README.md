@@ -11,7 +11,7 @@ Aplikacja ma interfejs API REST, który odbiera argumentem dzień w formacie rrr
 
 http://localhost:8081/api/v1/surfing-places/{date}
 
-Endpoint zwraca najlepszą lokalizację windsurfingową dla danego dnia. Dzień musi być podany w formacie rrrr-mm-dd.
+Endpoint zwraca najlepszą lokalizację windsurfingową dla danego dnia licząc od podanej daty przez 16 dni.Dzień musi być podany w formacie rrrr-mm-dd.
 Jeśli będzie zły format to pojawi się komunikat:<br><br>
 
 
