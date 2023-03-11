@@ -15,7 +15,7 @@ Endpoint zwraca najlepszą lokalizację windsurfingową dla danego dnia licząc 
 Jeśli będzie zły format to pojawi się komunikat:<br><br>
 
 
-![image](https://user-images.githubusercontent.com/74199705/224484107-68aa4f6d-1928-448f-b2eb-f439af56f7b7.png)<br><br><br>
+![image](https://user-images.githubusercontent.com/74199705/224489328-3e63a1a4-a76e-46a9-a0ba-cdfb23005b49.png)
 
 
 
