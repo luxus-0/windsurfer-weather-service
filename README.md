@@ -9,7 +9,7 @@ Aplikacja ma interfejs API REST, który odbiera argumentem dzień w formacie rrr
                                              Endpoint API
                                               
 
-http://localhost:8081/api/v1/surfing-places/{date}
+http://localhost:8080/api/v1/surfing-places/{date}
 
 Endpoint zwraca najlepszą lokalizację windsurfingową dla danego dnia licząc od podanej daty przez 16 dni.Dzień musi być podany w formacie rrrr-mm-dd.
 Jeśli będzie zły format to pojawi się komunikat:<br><br>
@@ -78,8 +78,8 @@ git clone https://github.com/luxus-0/windsurfer-weather-service.git</b>
 lub
 mvn spring-boot:run</b>
 
-<b>Aplikacja powinna teraz uruchomić się lokalnie na porcie 8081.</b><br>
-<b>4.Otwórz przeglądarkę i przejdź do adresu http://localhost:8081/swagger-ui.html, aby wyświetlić dokumentację interfejsu API REST.<br><br><br>
+<b>Aplikacja powinna teraz uruchomić się lokalnie na porcie 8080.</b><br>
+<b>4.Otwórz przeglądarkę i przejdź do adresu http://localhost:8080/swagger-ui.html, aby wyświetlić dokumentację interfejsu API REST.<br><br><br>
                                                            
                                                         
 
