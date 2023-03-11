@@ -54,7 +54,7 @@ class WeatherServiceTest {
         WeatherController weatherController = new WeatherController(weatherService);
         ResponseEntity<?> weatherResponse = weatherController.getWeather(date);
 
-        assertThat(weatherResponse.getBody()).isNull();
+        assertThat(weatherResponse.getBody()).isEqualTo("Niepoprawna data, proszę o datę w formacie yyyy-MM-dd");
         assertThat(weatherResponse.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -73,6 +73,7 @@ class WeatherServiceTest {
     void shouldReturnOKWhenDateIsCorrect() {
         String today = getToday();
 
+        WeatherService weatherService = new WeatherService(weatherClient);
         WeatherController weatherController = new WeatherController(weatherService);
 
         ResponseEntity<?> weatherResponse = weatherController.getWeather(today);
