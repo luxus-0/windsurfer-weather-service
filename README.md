@@ -5,6 +5,7 @@ Ta aplikacja wykorzystuje API Weatherbit Forecast do uzyskania prognoz pogody na
 Jak działa aplikacja?
 Aplikacja ma interfejs API REST, który odbiera argumentem dzień w formacie rrrr-mm-dd i zwraca odpowiedź z najlepszą lokalizacją windsurfingową na podstawie prognozy pogody na ten dzień.
 
+
                                              Endpoint API
                                               
 
@@ -12,7 +13,10 @@ http://localhost:8081/api/v1/surfing-places/{date}
 
 Endpoint zwraca najlepszą lokalizację windsurfingową dla danego dnia. Dzień musi być podany w formacie rrrr-mm-dd.
 Jeśli będzie zły format to pojawi się komunikat:<br><br>
+
+
 ![image](https://user-images.githubusercontent.com/74199705/224484107-68aa4f6d-1928-448f-b2eb-f439af56f7b7.png)<br>
+
 
 
                                             PRZYKŁAD ENDPOINT API
@@ -23,6 +27,8 @@ http://localhost:8081/api/v1/surfing-places/2023-03-11<br>
                                                     
 
 ![image](https://user-images.githubusercontent.com/74199705/224482127-a474f8d5-490d-4ae3-acfe-06c94d5b0bec.png)<br>
+
+
 
                                                 Lista lokalizacji
 
@@ -39,6 +45,7 @@ Lokalizacje mogą być edytowane lub rozszerzane bez konieczności korzystania z
 date, city, max_temp, min_temp, wind_spd.<br>
 
 
+
                                             Kryteria wyboru lokalizacji
                                             
 Aplikacja określa najlepszą lokalizację windsurfingową na podstawie dwóch kryteriów: prędkości wiatru i temperatury dla danego dnia.
@@ -47,10 +54,12 @@ Jeśli prędkość wiatru i temperatura mieszczą się w powyższych przedziała
 gdzie v to prędkość wiatru w m/s dla danego dnia, a temp to średnia prognozowana temperatura na dany dzień w stopniach Celsjusza. 
 Aplikacja zwraca nazwę lokalizacji z najwyższą wartością.<br>
 
+
                                                   Technologie
                                                   
 
 Aplikacja jest napisana w języku Java i wykorzystuje framework Spring Boot.<br>
+
 
 
                                     Budowanie i Uruchamianie aplikacji
@@ -79,9 +88,11 @@ Aplikacja powinna teraz uruchomić się lokalnie na porcie 8080.
                                                         
 
                                                     Rozszerzanie listy lokalizacji
+                                                    
 
 Lista lokalizacji windsurfingowych jest zdefiniowana w pliku src/main/resources/best_weather_for_windsurfing.json. Możesz edytować ten plik, aby dodać lub usunąć poszczególne parametry.
 Oczywiście można też postawić bazę danych np: PostgreSQL lub MongoDb i postawić dockera.<br>
+
 
                                                   
                                                     Format pliku BestWeatherForWindsurfing.json:
