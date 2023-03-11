@@ -3,7 +3,7 @@
 
 Ta aplikacja wykorzystuje API Weatherbit Forecast do uzyskania prognoz pogody na 16 dni w pięciu wybranych lokalizacjach dla windsurferów na całym świecie. Interfejs API REST jest udostępniany dla użytkowników, którzy chcą uzyskać najlepszą lokalizację windsurfingową na podstawie temperatury i prędkości wiatru dla danego dnia.
 Jak działa aplikacja?
-Aplikacja ma interfejs API REST, który odbiera argumentem dzień w formacie rrrr-mm-dd i zwraca odpowiedź z najlepszą lokalizacją windsurfingową na podstawie prognozy pogody na ten dzień.
+Aplikacja ma interfejs API REST, który odbiera argumentem dzień w formacie rrrr-mm-dd i zwraca odpowiedź z najlepszą lokalizacją windsurfingową na podstawie prognozy pogody na ten dzień.<br><br><br>
 
 
                                              Endpoint API
