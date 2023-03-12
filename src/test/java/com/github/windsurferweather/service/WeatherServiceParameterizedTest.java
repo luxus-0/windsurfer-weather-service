@@ -1,24 +1,18 @@
 package com.github.windsurferweather.service;
 
-import com.github.windsurferweather.model.Data;
 import com.github.windsurferweather.model.Weather;
 import com.github.windsurferweather.restClient.WeatherClient;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Optional;
 
 import static com.github.windsurferweather.utils.WeatherConstantUnitTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest
 public class WeatherServiceParameterizedTest {
@@ -52,7 +46,6 @@ public class WeatherServiceParameterizedTest {
          assertThat(actualMaxTemperature).isNotEqualTo(expectedMaxTemp);
          assertThat(actualWindSpeed).isNotEqualTo(expectedWindSpeed);
     }
-
     @ParameterizedTest
     @CsvSource({"2023-03-13, 7.0, 10.0, 0.0",
                 "2023-03-15, 12.0, 9.0, 0.0",
