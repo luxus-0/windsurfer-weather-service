@@ -40,10 +40,19 @@ public class WeatherReportController {
     }
 
     @GetMapping
-    ResponseEntity<Object> readWeatherReportForLocationsNearby(@RequestParam double lat, @RequestParam double lon, @RequestParam double distance){
+    ResponseEntity<?> findWeatherReportForLocationsNearby(@RequestParam double lat, @RequestParam double lon, @RequestParam double distance){
         List<WeatherReportDto> weatherReportDtos =  weatherReportService.readWeatherReportForLocationsNearby(lat, lon, distance);
         if(weatherReportDtos != null) {
             return new ResponseEntity<>(weatherReportDtos, HttpStatus.OK);
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping
+    ResponseEntity<?> findWeatherReportForLocationsNearby(@RequestParam String city, @RequestParam String country, @RequestParam LocalTime start, @RequestParam LocalTime end){
+        Double avgTempByTimeFrame =  weatherReportService.readAverageTemperatureForLocationInTimeFrame(city, country, start, end);
+        if(avgTempByTimeFrame != null) {
+            return new ResponseEntity<>(avgTempByTimeFrame, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
