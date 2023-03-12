@@ -25,8 +25,8 @@ public class WeatherReport {
     private String city;
     private String country;
 
-    private BigDecimal lat;
-    private BigDecimal lon;
+    private double lat;
+    private double lon;
     private LocalDateTime start;
     private LocalDateTime end;
     private Double temperature;
