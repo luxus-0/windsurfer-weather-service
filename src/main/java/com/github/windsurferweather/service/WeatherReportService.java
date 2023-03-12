@@ -9,7 +9,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.github.windsurferweather.mapper.WeatherReportMapper.mapToWeatherReportDto;
@@ -32,7 +31,7 @@ public class WeatherReportService {
         return weatherReportRepository.findAll();
     }
 
-    public Double readAverageTemperatureForLocationInTimeFrame(String city, String country, LocalDateTime start, LocalDateTime end) {
+    public Double readAverageTemperatureForLocationInTimeFrame(String city, String country, LocalTime start, LocalTime end) {
         List<WeatherReport> weatherReportsByLocationAndPeriodTime = weatherReportRepository.findAllByCityAndCountryAndStartAndEndBetween(city, country, start, end);
         double averageTemp = 0;
         if(weatherReportsByLocationAndPeriodTime != null){
