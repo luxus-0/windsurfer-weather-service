@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -20,7 +20,7 @@ public class WeatherReportController {
         this.weatherReportService = weatherReportService;
     }
 
-    @GetMapping
+    @GetMapping("")
     List<WeatherReport> findWeatherReport() {
         return weatherReportService.readWeatherReport();
     }
@@ -30,26 +30,8 @@ public class WeatherReportController {
         return weatherReportService.formWeatherReport(weatherReport);
     }
 
-    @GetMapping
-    ResponseEntity<Double> findMaxWindSpeedInPeriodTime(@RequestParam String city, @RequestParam String country, @RequestParam LocalTime start, @RequestParam LocalTime end){
-        Double maxWindSeedInTimePeriod = weatherReportService.readMaxWindSpeedForLocationInTimeFrame(city, country, start, end);
-        if(maxWindSeedInTimePeriod != null) {
-            return new ResponseEntity<>(maxWindSeedInTimePeriod, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @GetMapping
-    ResponseEntity<?> findWeatherReportForLocationsNearby(@RequestParam double lat, @RequestParam double lon, @RequestParam double distance){
-        List<WeatherReportDto> weatherReportDtos =  weatherReportService.readWeatherReportForLocationsNearby(lat, lon, distance);
-        if(weatherReportDtos != null) {
-            return new ResponseEntity<>(weatherReportDtos, HttpStatus.OK);
-        }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-    @GetMapping
-    ResponseEntity<?> findWeatherReportForLocationsNearby(@RequestParam String city, @RequestParam String country, @RequestParam LocalTime start, @RequestParam LocalTime end){
+    @GetMapping("/nearest_location")
+    ResponseEntity<?> findWeatherReportForLocationsNearby(@RequestParam String city, @RequestParam String country, @RequestParam LocalDateTime start, @RequestParam LocalDateTime end){
         Double avgTempByTimeFrame =  weatherReportService.readAverageTemperatureForLocationInTimeFrame(city, country, start, end);
         if(avgTempByTimeFrame != null) {
             return new ResponseEntity<>(avgTempByTimeFrame, HttpStatus.OK);

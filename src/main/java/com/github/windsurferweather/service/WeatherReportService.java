@@ -31,11 +31,11 @@ public class WeatherReportService {
         return weatherReportRepository.findAll();
     }
 
-    public Double readAverageTemperatureForLocationInTimeFrame(String city, String country, LocalTime start, LocalTime end) {
-        List<WeatherReport> weatherReportsByLocationAndPeriodTime = weatherReportRepository.findAllByCityAndCountryAndStartAndEndBetween(city, country, start, end);
+    public Double readAverageTemperatureForLocationInTimeFrame(String city, String country, LocalDateTime start, LocalDateTime end) {
+        List<WeatherReport> weatherReportsByLocation = weatherReportRepository.findAllByCityAndCountryAndStartAndEnd(city, country, start, end);
         double averageTemp = 0;
-        if(weatherReportsByLocationAndPeriodTime != null){
-            averageTemp =  weatherReportsByLocationAndPeriodTime.stream()
+        if(weatherReportsByLocation != null){
+            averageTemp =  weatherReportsByLocation.stream()
                     .mapToDouble(WeatherReport::getTemperature)
                     .summaryStatistics()
                     .getAverage();
