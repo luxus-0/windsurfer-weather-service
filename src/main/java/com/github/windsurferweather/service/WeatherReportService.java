@@ -43,7 +43,7 @@ public class WeatherReportService {
         return Optional.of(averageTemp).orElse(0d);
     }
 
-    public Double readMaxWindSpeedForLocationInTimeFrame(String city, String country, LocalTime start, LocalTime end){
+    public Double readMaxWindSpeedForLocationInTimeFrame(String city, String country, LocalDateTime start, LocalDateTime end){
         List<WeatherReport> weatherReports = weatherReportRepository.findAllByCityAndCountry(city, country);
 
         if(weatherReports != null) {
