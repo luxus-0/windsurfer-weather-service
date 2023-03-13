@@ -1,16 +1,12 @@
 package com.github.windsurferweather.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,7 +23,9 @@ public class WeatherReport {
 
     private double lat;
     private double lon;
+    @Column(name = "start_time")
     private LocalDateTime start;
+    @Column(name = "end_time")
     private LocalDateTime end;
     private Double temperature;
     private Double windSpeed;
